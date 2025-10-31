@@ -14,10 +14,10 @@ object SwerveConstants {
 
     val moduleNames = arrayOf("Front Left", "Front Right", "Back Left", "Back Right")
     val moduleTranslations = arrayOf(
-        Translation2d(Meters.of(0.0), Meters.of(0.0)),
-        Translation2d(Meters.of(0.0), Meters.of(0.0)),
-        Translation2d(Meters.of(0.0), Meters.of(0.0)),
-        Translation2d(Meters.of(0.0), Meters.of(0.0))
+        Translation2d(Meters.of(0.288925), Meters.of(0.288925)),
+        Translation2d(Meters.of(0.288925), Meters.of(0.288925)),
+        Translation2d(Meters.of(0.288925), Meters.of(0.288925)),
+        Translation2d(Meters.of(0.288925), Meters.of(0.288925))
     )
     val moduleZeroRotations = arrayOf(
         Radians.of(0.0),
@@ -25,9 +25,9 @@ object SwerveConstants {
         Radians.of(0.0),
         Radians.of(0.0)
     )
-    val encoderIDs = arrayOf(0, 0, 0, 0)
-    val driveIDs = arrayOf(0, 0, 0, 0)
-    val angleIDs = arrayOf(0, 0, 0, 0)
+    val encoderIDs = arrayOf(1, 2, 3, 4)
+    val driveIDs = arrayOf(5, 6, 7, 8)
+    val angleIDs = arrayOf(9, 10, 11, 12)
 
     const val DRIVE_P = 0.0
     const val DRIVE_I = 0.0
