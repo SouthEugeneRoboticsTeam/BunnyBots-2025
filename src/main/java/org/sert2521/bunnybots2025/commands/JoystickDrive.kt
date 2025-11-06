@@ -1,22 +1,17 @@
 package org.sert2521.bunnybots2025.commands
 
-import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj2.command.Command
 import org.sert2521.bunnybots2025.Input
-import org.sert2521.bunnybots2025.subsystems.drivetrain.DriveConfig
 import org.sert2521.bunnybots2025.subsystems.drivetrain.DriveConfig.DRIVE_SPEED
 import org.sert2521.bunnybots2025.subsystems.drivetrain.DriveConfig.ROT_SPEED
 import org.sert2521.bunnybots2025.subsystems.drivetrain.Drivetrain
 import org.sert2521.bunnybots2025.util.SwerveControlUtil
-import kotlin.math.pow
 
 class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
 
-    var inputX = 0.0
-    var inputY = 0.0
-    var inputRot = 0.0
-    var correctedInput = Pair(0.0, 0.0)
+    var correctedInput = Translation2d()
     var inputChassisSpeeds = ChassisSpeeds()
 
     init {
@@ -24,19 +19,16 @@ class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
         addRequirements(Drivetrain)
     }
 
-    override fun initialize() {}
+    override fun initialize() {
+        Drivetrain.stopDrivePID()
+    }
 
     override fun execute() {
-
-        inputX = Input.getLeftX()
-        inputY = Input.getLeftY()
-        inputRot = Input.getRightX()
-
-        correctedInput = SwerveControlUtil.reverseSquareness(inputX, inputY)
+        correctedInput = SwerveControlUtil.reverseSquareness(Input.getLeftX(), Input.getLeftY())
         inputChassisSpeeds = ChassisSpeeds(
-            correctedInput.first * DRIVE_SPEED,
-            correctedInput.second * DRIVE_SPEED,
-            inputRot * ROT_SPEED
+            correctedInput.x * DRIVE_SPEED,
+            correctedInput.y * DRIVE_SPEED,
+            Input.getRightX() * ROT_SPEED
         )
 
         // Accel limiting should go here if needed

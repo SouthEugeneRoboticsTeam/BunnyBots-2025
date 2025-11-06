@@ -2,6 +2,7 @@ package org.sert2521.bunnybots2025.util
 
 import dev.doglog.DogLog
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.LinearAcceleration
@@ -17,10 +18,10 @@ object SwerveControlUtil {
     private var squareness = 3.0
 
     fun squarenessCommand(xInputSupplier: Supplier<Double>, yInputSupplier:Supplier<Double>): Command {
-        val applySquareness = Trigger(DogLog.tunable("ApplySquareness", false))
+        val applySquareness = Trigger(DogLog.tunable("Controller Squareness/Apply Squareness Button", false))
         var x: Double
         var y: Double
-        var corrInputs: Pair<Double, Double>
+        var corrInputs: Translation2d
 
         applySquareness.onChange(Commands.runOnce({
             squareness = squarenessCharacterize(xInputSupplier.get(), yInputSupplier.get())
@@ -31,12 +32,12 @@ object SwerveControlUtil {
             y = yInputSupplier.get()
             corrInputs = reverseSquareness(x, y)
 
-            DogLog.log("Uncorrected Controller Input", ChassisSpeeds(x, y, 0.0))
-            DogLog.log("Corrected Controller Input", ChassisSpeeds(corrInputs.first, corrInputs.second, 0.0))
+            DogLog.log("Controller Squareness/Uncorrected Controller Input", ChassisSpeeds(x, y, 0.0))
+            DogLog.log("Controller Squareness/Corrected Controller Input", ChassisSpeeds(corrInputs.x, corrInputs.y, 0.0))
 
-            DogLog.log("Calculated Squareness", squarenessCharacterize(x, y))
-            DogLog.log("Angle from 45", squarenessAngleToDiagonal(x, y))
-            DogLog.log("Current Squareness", squareness)
+            DogLog.log("Controller Squareness/Calculated Squareness", squarenessCharacterize(x, y))
+            DogLog.log("Controller Squareness/Angle from 45", squarenessAngleToDiagonal(x, y))
+            DogLog.log("Controller Squareness/Current Squareness", squareness)
         })
     }
 
@@ -46,7 +47,7 @@ object SwerveControlUtil {
      *
      * @return The unbiased controller input.
      */
-    fun reverseSquareness(x:Double, y:Double, squarenessValue: Double): Pair<Double, Double> {
+    fun reverseSquareness(x:Double, y:Double, squarenessValue: Double): Translation2d {
         val thetaUnconstrained = atan(y/x)
 
         // It's ok to constrain it like this because the squareness graph is symmetric in 8 ways
@@ -58,11 +59,34 @@ object SwerveControlUtil {
         val magnitudeBias = sqrt((tan(theta).pow(2) + 1) /
                     ((1 + tan(theta).pow(squarenessValue)).pow(2 / squarenessValue)))
 
-        return Pair(x / magnitudeBias, y / magnitudeBias)
+        return Translation2d(x / magnitudeBias, y / magnitudeBias)
     }
 
-    fun reverseSquareness(x:Double, y:Double): Pair<Double, Double>{
+    /**
+     * Finds the actual magnitude of controller input based on the current input and squareness value of the input
+     *
+     * @return The unbiased controller input.
+     */
+    fun reverseSquareness(x:Double, y:Double): Translation2d{
         return reverseSquareness(x, y, squareness)
+    }
+
+    /**
+     * Finds the actual magnitude of controller input based on the current input and squareness value of the input
+     *
+     * @return The unbiased controller input.
+     */
+    fun reverseSquareness(xy:Translation2d, squarenessValue: Double): Translation2d{
+        return reverseSquareness(xy.x, xy.y, squarenessValue)
+    }
+
+    /**
+     * Finds the actual magnitude of controller input based on the current input and squareness value of the input
+     *
+     * @return The unbiased controller input.
+     */
+    fun reverseSquareness(xy:Translation2d): Translation2d{
+        return reverseSquareness(xy, squareness)
     }
 
     /**
@@ -72,13 +96,13 @@ object SwerveControlUtil {
      *
      * @return A pair of the calculated squareness and the difference of the controller input from 45 degrees (closer to 0 is better).
      */
-    fun squarenessCharacterize(x:Double, y:Double):Double{
+    private fun squarenessCharacterize(x:Double, y:Double):Double{
         val leg = hypot(x, y)/sqrt(2.0)
 
         return log(0.5, leg)
     }
 
-    fun squarenessAngleToDiagonal(x:Double, y:Double):Double{
+    private fun squarenessAngleToDiagonal(x:Double, y:Double):Double{
         val thetaUnconstrained = atan(y/x)
         val theta = MathUtil.inputModulus(thetaUnconstrained, 0.0, PI/2)
 
@@ -95,8 +119,6 @@ object SwerveControlUtil {
             1.0
         }
 
-
-
         return ChassisSpeeds(targetFieldSpeeds.vxMetersPerSecond * magnitudeToApply,
             targetFieldSpeeds.vyMetersPerSecond * magnitudeToApply,
             targetFieldSpeeds.omegaRadiansPerSecond)
@@ -108,23 +130,36 @@ object SwerveControlUtil {
         accelLimit: LinearAcceleration
     ): ChassisSpeeds {
 
-        // divide by 0.02 (loop time) to get real acceleration limits in /s^2
-        val changeInSpeeds = targetFieldSpeeds.minus(lastFieldSpeeds)
-        val totalAcceleration = changeInSpeeds.div(0.02)
-        val totalLinearAcceleration = MetersPerSecondPerSecond.of(
-            hypot(totalAcceleration.vxMetersPerSecond, totalAcceleration.vyMetersPerSecond)
+//        // divide by 0.02 (loop time) to get real acceleration limits in /s^2
+//        val changeInSpeeds = targetFieldSpeeds.minus(lastFieldSpeeds)
+//        val totalAcceleration = changeInSpeeds.div(0.02)
+//        val totalLinearAcceleration = MetersPerSecondPerSecond.of(
+//            hypot(totalAcceleration.vxMetersPerSecond, totalAcceleration.vyMetersPerSecond)
+//        )
+
+        val accelLimitedSpeeds = MathUtil.slewRateLimit(
+            Translation2d(
+                lastFieldSpeeds.vxMetersPerSecond,
+                lastFieldSpeeds.vyMetersPerSecond
+            ),
+            Translation2d(
+                targetFieldSpeeds.vxMetersPerSecond,
+                targetFieldSpeeds.vyMetersPerSecond
+            ),
+            0.02,
+            accelLimit.baseUnitMagnitude()
         )
 
-        // Yes I know that totalAcceleration should have units of meters per second squared.
-        // There's no class for translational acceleration in components so whatever
-        val magnitudeToApply = if (totalLinearAcceleration > accelLimit) {
-            accelLimit.div(totalLinearAcceleration).magnitude()
-        } else {
-            1.0
-        }
+//        // Yes I know that totalAcceleration should have units of meters per second squared.
+//        // There's no class for translational acceleration in components so whatever
+//        val magnitudeToApply = if (totalLinearAcceleration > accelLimit) {
+//            accelLimit.div(totalLinearAcceleration).magnitude()
+//        } else {
+//            1.0
+//        }
+//
+//        val x = lastFieldSpeeds.plus(changeInSpeeds.times(magnitudeToApply))
 
-        val x = lastFieldSpeeds.plus(changeInSpeeds.times(magnitudeToApply))
-
-        return ChassisSpeeds(x.vxMetersPerSecond, x.vyMetersPerSecond, targetFieldSpeeds.omegaRadiansPerSecond)
+        return ChassisSpeeds(accelLimitedSpeeds.x, accelLimitedSpeeds.y, targetFieldSpeeds.omegaRadiansPerSecond)
     }
 }

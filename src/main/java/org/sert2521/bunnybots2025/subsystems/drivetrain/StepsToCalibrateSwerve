@@ -1,0 +1,64 @@
+1. Set the angle offsets
+Setup:
+    -Stiff straight edge (2x4 or metal tube works well)
+    -Completed drivetrain on tote
+    -Robot turned on and connected to DS
+    -Access to module rotation values (use Advantage Scope
+    -SwerveConstants opened to moduleZeroRotations
+
+Steps:
+    -Turn robot on
+    -Align all modules by hand (while robot disabled) to forward on the robot
+    -Make sure the bevel gear on each module is turned LEFT (or west if forward on the robot is north)
+    -Use the straight edge against the two pairs of modules on the left and right to align precisely
+    -Find the module rotation values and put them into moduleZeroRotations (order is FL, FR, BL, BR)
+    -Push code
+    -If module rotation values are now zero, you're done
+
+2. Set the angle PID
+Setup:
+    -Robot turned on, connected to DS, on the ground
+    -Drive PID and feedforward all set to zero
+    -Graph of target angle and actual angle of at least one module on Advantage Scope
+    -SwerveConstants opened to ANGLE_P, I, and D
+    -Driver Controller connected
+
+Steps:
+    -Set angle P to 0.1
+    -Push code and then enable robot (every time you change the PID here do this)
+    -Move drive joystick around in a circle and then 90 degree turns
+    -Tune PID with that graph and repeat until PID tuned (small overshoot, no jitter or oscillation)
+    -After tuning P and D, test it on tote, if it makes a loud rattling noise (jitter) then D is too big
+
+Note:
+    -There can be MANY problems you can face with this! If not all modules are acting the same, something is wrong!
+    -If modules are overshooting with very small P values/still going slow, something is wrong!
+    -Check module zeros (with ALL module bevel gears facing west/left/positive Y)
+    -Check inversion (positive on the motor encoder should equal positive on the cancoder)
+
+3. Find drive feedforward
+Setup:
+    -Largest horizontal place possible
+    -In autonomous init, put DrivetrainFeedforwardSysId.get().schedule()
+    -Have SwerveConstants open to SYS_ID_FF_RAMP_RATE
+    -Have 2 people to help move the robot back and forth
+    -Start with robot on tote
+
+Steps:
+    -First enable auto while robot on tote and see if it works as expected
+    -Move robot onto the ground on one end of the room
+    -Enable robot and then disable it before it hits the other side of the room
+    -Read the S and V values from the driverstaion output and mark it down along with the SYS_ID_FF_RAMP_RATE
+    -Repeat with a few different SYS_ID_FF_RAMP_RATEs (higher makes the robot accelerate faster so be careful)
+    -Use all the values you have marked down to choose a good S and V value somewhere in the middle
+
+4. Find drive PID
+Setup:
+    -Make DRIVE_SPEED somewhere where you can reach the max speed within the space of the room
+    -Put robot on the ground
+    -In initialize() in JoystickDrive, change from stopDrivePID to startDrivePID
+    -Bring up the graph of drive speed vs target drive speed
+    -Tune PID how you would normally, increase P until overshoot, increase D until no overshoot, check for jitter.
+
+
+

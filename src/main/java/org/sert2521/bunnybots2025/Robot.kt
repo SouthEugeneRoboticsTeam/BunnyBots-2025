@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.sert2521.bunnybots2025.subsystems.drivetrain.Drivetrain
 import org.sert2521.bunnybots2025.util.SwerveControlUtil
 
 /**
@@ -39,7 +40,6 @@ object Robot : TimedRobot()
                 .withCaptureDs(true)
                 .withCaptureConsole(true)
         )
-
     }
 
 
@@ -60,6 +60,7 @@ object Robot : TimedRobot()
 
     override fun autonomousInit()
     {
+        Drivetrain.startDrivePID()
         autonomousCommand?.schedule()
     }
 
@@ -96,7 +97,7 @@ object Robot : TimedRobot()
 
     override fun simulationInit()
     {
-
+        SwerveControlUtil.squarenessCommand(Input::getLeftX, Input::getLeftY)
     }
 
     override fun simulationPeriodic()

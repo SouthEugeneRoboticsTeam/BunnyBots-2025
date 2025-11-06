@@ -4,6 +4,7 @@ import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
+import edu.wpi.first.units.measure.Distance
 import edu.wpi.first.units.measure.LinearVelocity
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
@@ -11,6 +12,8 @@ import yams.gearing.MechanismGearing
 object SwerveConstants {
     val driveGearing = MechanismGearing(GearBox.fromReductionStages(6.75))
     val angleGearing = MechanismGearing(GearBox.fromReductionStages(150.0/7.0))
+
+    val wheelRadius: Distance = Inches.of(2.0)
 
     val moduleNames = arrayOf("Front Left", "Front Right", "Back Left", "Back Right")
     val moduleTranslations = arrayOf(
@@ -50,6 +53,8 @@ object SwerveConstants {
     const val HEADING_D = 0.0
 
     val maxSpeed: LinearVelocity = MetersPerSecond.of(4.571)
+
+    const val SYS_ID_FF_RAMP_RATE = 1.0
 }
 
 object DriveConfig {
