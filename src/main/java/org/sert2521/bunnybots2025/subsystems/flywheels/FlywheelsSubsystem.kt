@@ -4,7 +4,6 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.math.trajectory.ExponentialProfile
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.KilogramSquareMeters
 import edu.wpi.first.units.Units.Rotations
@@ -15,10 +14,10 @@ import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.FlywheelsConstants
 import org.sert2521.bunnybots2025.RobotConstants
-import org.sert2521.bunnybots2025.WristConstants
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 import yams.math.ExponentialProfilePIDController
@@ -28,16 +27,16 @@ import yams.mechanisms.positional.Arm
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 
-object FlywheelsSubsystem {
+object FlywheelsSubsystem : SubsystemBase() {
     private val flywheelMotorTop = SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_TOP_ID, SparkLowLevel.MotorType.kBrushless)
 
-    private val motorConfig = SmartMotorControllerConfig(this)
+    private val motorConfigTop = SmartMotorControllerConfig(this)
         .withClosedLoopController(
             ExponentialProfilePIDController(
                 FlywheelsConstants.P,
                 FlywheelsConstants.I,
                 FlywheelsConstants.D,
-                ExponentialProfilePIDController.createFlywheelConstraints()
+                ExponentialProfilePIDController.createFlywheelConstraints(Volts.of(12.0), DCMotor.getNEO(1), 0.0, 0.0, 0)
             )
         )
         .withGearing(
@@ -55,13 +54,13 @@ object FlywheelsSubsystem {
         .withMotorInverted(false)
         .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
-    private val fullMotor = SparkWrapper(flywheelMotorTop, DCMotor.getNEO(1),
-        org.sert2521.offseason2025.subsystems.FlywheelSubsystem.motorConfig
+    private val fullMotorTop = SparkWrapper(flywheelMotorTop, DCMotor.getNEO(1),
+        FlywheelsSubsystem.motorConfigTop
     )
 
     private val flywheelMotorBottom = SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_BOTTOM_ID, SparkLowLevel.MotorType.kBrushless)
 
-    private val motorConfig = SmartMotorControllerConfig(this)
+    private val motorConfigBottom = SmartMotorControllerConfig(this)
         .withClosedLoopController(
             ExponentialProfilePIDController(
                 FlywheelsConstants.P,
@@ -82,11 +81,11 @@ object FlywheelsSubsystem {
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Flywheel Motor Bottom", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withStatorCurrentLimit(Amps.of(40.0))
-        .withMotorInverted(false)
+        .withMotorInverted(true)
         .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
-    private val fullMotor = SparkWrapper(flywheelMotorBottom, DCMotor.getNEO(1),
-        org.sert2521.offseason2025.subsystems.FlywheelSubsystem.motorConfig
+    private val fullMotorBottom = SparkWrapper(flywheelMotorBottom, DCMotor.getNEO(1),
+        FlywheelsSubsystem.motorConfigBottom
     )
 
     private val positionConfig = MechanismPositionConfig()
@@ -94,12 +93,12 @@ object FlywheelsSubsystem {
         .withMaxRobotLength(RobotConstants.maxLength)
 
 
-    private val fullConfig = ArmConfig(fullMotor)
+    private val fullConfig = ArmConfig(fullMotorBottom)
         .withMOI(FlywheelsConstants.moi.`in`(KilogramSquareMeters))
         .withHardLimit(FlywheelsConstants.hardMin, FlywheelsConstants.hardMax)
         .withTelemetry("Flywheels", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withLength(FlywheelsConstants.length)
-        .withStartingPosition(Rotations.of(-0.27))
+        .withStartingPosition(Rotations.of(0.0))
 
     private val arm = Arm(fullConfig)
 
