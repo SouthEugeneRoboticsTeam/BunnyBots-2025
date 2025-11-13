@@ -1,9 +1,9 @@
 package org.sert2521.bunnybots2025.subsystems.drivetrain
 
 import com.ctre.phoenix6.hardware.CANcoder
+import com.ctre.phoenix6.hardware.Pigeon2
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
-import com.studica.frc.AHRS
 import dev.doglog.DogLog
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.estimator.PoseEstimator
@@ -101,7 +101,7 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
-    private val gyro = AHRS(AHRS.NavXComType.kUSB1)
+    private val gyro = Pigeon2(0)
 
     private val kinematics = SwerveDriveKinematics(*moduleTranslations)
 
@@ -177,7 +177,7 @@ object Drivetrain : SubsystemBase() {
 
     private fun getGyroAngle(): Angle {
         return if (RobotBase.isReal()) {
-            Degrees.of(gyro.angle)
+            gyro.yaw.value
         } else {
             simGyroAngle
         }
