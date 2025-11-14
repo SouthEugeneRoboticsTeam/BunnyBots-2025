@@ -102,10 +102,18 @@ object Drivetrain : SubsystemBase() {
     }
 
     private val gyro = Pigeon2(0)
+    private val gyroYaw = gyro.yaw.asSupplier()
 
     private val kinematics = SwerveDriveKinematics(*moduleTranslations)
 
     private val poseEstimator = SwerveDrivePoseEstimator(
+        kinematics,
+        Rotation2d.kZero,
+        Array(4) { modules[it].position },
+        Pose2d.kZero
+    )
+
+    private val visionPoseEstimator = SwerveDrivePoseEstimator(
         kinematics,
         Rotation2d.kZero,
         Array(4) { modules[it].position },
@@ -177,7 +185,7 @@ object Drivetrain : SubsystemBase() {
 
     private fun getGyroAngle(): Angle {
         return if (RobotBase.isReal()) {
-            gyro.yaw.value
+            gyroYaw.get()
         } else {
             simGyroAngle
         }
