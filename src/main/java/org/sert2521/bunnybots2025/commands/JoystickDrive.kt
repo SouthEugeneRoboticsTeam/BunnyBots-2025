@@ -26,8 +26,8 @@ class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
     override fun execute() {
         correctedInput = SwerveControlUtil.reverseSquareness(Input.getLeftX(), Input.getLeftY())
         inputChassisSpeeds = ChassisSpeeds(
-            correctedInput.x * DRIVE_SPEED,
             correctedInput.y * DRIVE_SPEED,
+            correctedInput.x * DRIVE_SPEED,
             Input.getRightX() * ROT_SPEED
         )
 
