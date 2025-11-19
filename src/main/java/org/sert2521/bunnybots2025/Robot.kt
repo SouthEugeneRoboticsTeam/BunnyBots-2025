@@ -39,7 +39,9 @@ object Robot : TimedRobot()
             DogLogOptions()
                 .withCaptureDs(true)
                 .withCaptureConsole(true)
+                .withNtPublish(true)
         )
+        Drivetrain
     }
 
 
@@ -73,7 +75,7 @@ object Robot : TimedRobot()
     {
         autonomousCommand?.cancel()
 
-        if (!RobotBase.isReal()){
+        if (!isReal()){
             SwerveControlUtil.squarenessCommand(Input::getLeftX, Input::getLeftY).schedule()
         }
     }

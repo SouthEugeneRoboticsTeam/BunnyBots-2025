@@ -1,12 +1,11 @@
 package org.sert2521.bunnybots2025.subsystems.drivetrain
 
 import com.ctre.phoenix6.hardware.CANcoder
+import com.ctre.phoenix6.hardware.Pigeon2
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
-import com.studica.frc.AHRS
 import dev.doglog.DogLog
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
-import edu.wpi.first.math.estimator.PoseEstimator
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.geometry.Pose2d
@@ -48,7 +47,6 @@ import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.moduleTr
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.moduleZeroRotations
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.wheelRadius
 import yams.mechanisms.config.SwerveModuleConfig
-import yams.mechanisms.swerve.SwerveDrive
 import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
@@ -68,14 +66,14 @@ object Drivetrain : SubsystemBase() {
             .withClosedLoopController(DRIVE_P, DRIVE_I, DRIVE_D)
             .withGearing(driveGearing)
             .withStatorCurrentLimit(Amps.of(DRIVE_CURRENT_LIMIT))
-            .withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+            //.withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val angleConfig = SmartMotorControllerConfig(this)
             .withClosedLoopController(ANGLE_P, ANGLE_I, ANGLE_D)
             .withContinuousWrapping(Radians.of(-PI), Radians.of(PI))
             .withGearing(angleGearing)
             .withStatorCurrentLimit(Amps.of(ANGLE_CURRENT_LIMIT))
-            .withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+            //.withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val fullDriveMotorController = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
         val fullAngleMotorController = SparkWrapper(angleMotor, DCMotor.getNEO(1), angleConfig)
@@ -83,7 +81,7 @@ object Drivetrain : SubsystemBase() {
         val moduleConfig = SwerveModuleConfig(fullDriveMotorController, fullAngleMotorController)
             .withAbsoluteEncoderOffset(rotationZero)
             .withAbsoluteEncoder(absoluteEncoder.absolutePosition.asSupplier())
-            .withTelemetry(moduleName, SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+            .withTelemetry(moduleName, SmartMotorControllerConfig.TelemetryVerbosity.LOW)
             .withLocation(location)
             .withOptimization(true)
 
@@ -101,11 +99,19 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
-    private val gyro = AHRS(AHRS.NavXComType.kUSB1)
+    private val gyro = Pigeon2(0)
+    private val gyroYaw = gyro.yaw.asSupplier()
 
     private val kinematics = SwerveDriveKinematics(*moduleTranslations)
 
     private val poseEstimator = SwerveDrivePoseEstimator(
+        kinematics,
+        Rotation2d.kZero,
+        Array(4) { modules[it].position },
+        Pose2d.kZero
+    )
+
+    private val visionPoseEstimator = SwerveDrivePoseEstimator(
         kinematics,
         Rotation2d.kZero,
         Array(4) { modules[it].position },
@@ -136,7 +142,7 @@ object Drivetrain : SubsystemBase() {
             DogLog.logFault("Gyro Disconnected", Alert.AlertType.kError)
         }
 
-        poseEstimator.update(Rotation2d.fromRadians(getGyroAngle().`in`(Radians)), getModulePositions())
+        poseEstimator.update(Rotation2d(getGyroAngle()), getModulePositions())
 
         val moduleStates = getModuleStates()
         DogLog.log("Drivetrain/SwerveModuleStates/Measured", moduleStates)
@@ -155,7 +161,7 @@ object Drivetrain : SubsystemBase() {
         if (!simTimer.isRunning) {
             simTimer.start()
         }
-        modules.forEach { it.simIterate() }
+        // modules.forEach { it.simIterate() }
         simGyroAngle = simGyroAngle.plus(
             Radians.of(
                 kinematics.toChassisSpeeds(getModuleStates()).omegaRadiansPerSecond * simTimer.get()
@@ -177,7 +183,7 @@ object Drivetrain : SubsystemBase() {
 
     private fun getGyroAngle(): Angle {
         return if (RobotBase.isReal()) {
-            Degrees.of(gyro.angle)
+            gyroYaw.get()
         } else {
             simGyroAngle
         }

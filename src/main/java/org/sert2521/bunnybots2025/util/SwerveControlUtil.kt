@@ -15,7 +15,7 @@ import java.util.function.Supplier
 import kotlin.math.*
 
 object SwerveControlUtil {
-    private var squareness = 3.0
+    private var squareness = 8.1
 
     fun squarenessCommand(xInputSupplier: Supplier<Double>, yInputSupplier:Supplier<Double>): Command {
         val applySquareness = Trigger(DogLog.tunable("Controller Squareness/Apply Squareness Button", false))
@@ -32,12 +32,14 @@ object SwerveControlUtil {
             y = yInputSupplier.get()
             corrInputs = reverseSquareness(x, y)
 
-            DogLog.log("Controller Squareness/Uncorrected Controller Input", ChassisSpeeds(x, y, 0.0))
-            DogLog.log("Controller Squareness/Corrected Controller Input", ChassisSpeeds(corrInputs.x, corrInputs.y, 0.0))
+            DogLog.log("Controller Squareness/Uncorrected Controller Input", ChassisSpeeds(y, x, 0.0))
+            DogLog.log("Controller Squareness/Corrected Controller Input", ChassisSpeeds(corrInputs.y, corrInputs.x, 0.0))
 
             DogLog.log("Controller Squareness/Calculated Squareness", squarenessCharacterize(x, y))
             DogLog.log("Controller Squareness/Angle from 45", squarenessAngleToDiagonal(x, y))
             DogLog.log("Controller Squareness/Current Squareness", squareness)
+
+            DogLog.log("Controller Squareness/Corrected Magnitude", hypot(corrInputs.x, corrInputs.y))
         })
     }
 
@@ -58,8 +60,13 @@ object SwerveControlUtil {
         // This models the output curve of the xbox controller with the specified squareness
         val magnitudeBias = sqrt((tan(theta).pow(2) + 1) /
                     ((1 + tan(theta).pow(squarenessValue)).pow(2 / squarenessValue)))
+        val outputTranslation = Translation2d(x / magnitudeBias, y / magnitudeBias)
 
-        return Translation2d(x / magnitudeBias, y / magnitudeBias)
+        if(outputTranslation.norm>1.0){
+            outputTranslation.div(outputTranslation.norm)
+        }
+
+        return outputTranslation
     }
 
     /**
