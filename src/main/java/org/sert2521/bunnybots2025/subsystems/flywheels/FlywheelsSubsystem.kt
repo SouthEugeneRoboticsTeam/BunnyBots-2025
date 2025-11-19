@@ -111,7 +111,8 @@ object FlywheelsSubsystem : SubsystemBase() {
     }
 
     override fun simulationPeriodic() {
-
+        fullMotorBottom.simIterate()
+        fullMotorTop.simIterate()
     }
 
     fun setVelocities(angle: AngularVelocity): Command {

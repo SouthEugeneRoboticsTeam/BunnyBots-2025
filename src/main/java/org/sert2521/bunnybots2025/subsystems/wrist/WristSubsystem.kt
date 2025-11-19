@@ -76,10 +76,6 @@ object WristSubsystem  : SubsystemBase(){
         arm.simIterate()
     }
 
-    fun getMechanism2dForElevator(): MechanismObject2d {
-        return arm.mechanismLigament
-    }
-
     private fun setAngleInstantCommand(angle: Angle): Command {
         return arm.setAngle(angle)
     }
@@ -95,5 +91,4 @@ object WristSubsystem  : SubsystemBase(){
     fun sysId(): Command {
         return arm.sysId(Volts.of(3.0), Volts.of(3.0).per(Second), Seconds.of(30.0))
     }
-
 }
