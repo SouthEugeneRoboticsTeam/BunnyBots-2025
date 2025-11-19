@@ -257,7 +257,18 @@ object Drivetrain : SubsystemBase() {
                 biggestTag = i
             }
         }
-        return Optional.of(latestResults[biggestTag].targetPose_RobotSpace2D)
+
+        return Optional.of(latestResults[biggestTag].robotPose_TargetSpace2D)
+    }
+
+    fun getVisionPoseToTarget(target:Pose2d):Pose2d {
+        val visionPose = getVisionPose()
+
+        return if (visionPose.isPresent){
+            target.relativeTo(visionPose.get())
+        } else {
+            Pose2d.kZero
+        }
     }
 
     fun runFFCharacterization(output: Double): Double {
