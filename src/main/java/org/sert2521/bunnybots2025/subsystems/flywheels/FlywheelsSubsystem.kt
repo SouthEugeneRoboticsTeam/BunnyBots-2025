@@ -4,25 +4,24 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.units.Units.Amps
-import edu.wpi.first.units.Units.KilogramSquareMeters
-import edu.wpi.first.units.Units.Rotations
-import edu.wpi.first.units.Units.Second
-import edu.wpi.first.units.Units.Seconds
-import edu.wpi.first.units.Units.Volts
+import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Angle
+import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.FlywheelsConstants
+import org.sert2521.bunnybots2025.FlywheelsConstants.bottomMotorVelocity
+import org.sert2521.bunnybots2025.FlywheelsConstants.topMotorVelocity
 import org.sert2521.bunnybots2025.RobotConstants
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 import yams.math.ExponentialProfilePIDController
 import yams.mechanisms.config.ArmConfig
 import yams.mechanisms.config.MechanismPositionConfig
+import yams.mechanisms.config.ShooterConfig
 import yams.mechanisms.positional.Arm
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
@@ -36,7 +35,17 @@ object FlywheelsSubsystem : SubsystemBase() {
                 FlywheelsConstants.P,
                 FlywheelsConstants.I,
                 FlywheelsConstants.D,
-                ExponentialProfilePIDController.createFlywheelConstraints(Volts.of(12.0), DCMotor.getNEO(1), 0.0, 0.0, 0)
+                ExponentialProfilePIDController.createFlywheelConstraints(
+                    Volts.of(12.0),
+                    DCMotor.getNEO(1),
+                    Kilograms.of(0.0),
+                    Meters.of(0.0),
+                    MechanismGearing(
+                        GearBox.fromReductionStages(
+                            1.0
+                        )
+                    )
+                )
             )
         )
         .withGearing(
@@ -54,11 +63,10 @@ object FlywheelsSubsystem : SubsystemBase() {
         .withMotorInverted(false)
         .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
-    private val fullMotorTop = SparkWrapper(flywheelMotorTop, DCMotor.getNEO(1),
-        FlywheelsSubsystem.motorConfigTop
-    )
+    private val fullMotorTop = SparkWrapper(flywheelMotorTop, DCMotor.getNEO(1), motorConfigTop)
 
-    private val flywheelMotorBottom = SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_BOTTOM_ID, SparkLowLevel.MotorType.kBrushless)
+    private val flywheelMotorBottom =
+        SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_BOTTOM_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val motorConfigBottom = SmartMotorControllerConfig(this)
         .withClosedLoopController(
@@ -66,7 +74,17 @@ object FlywheelsSubsystem : SubsystemBase() {
                 FlywheelsConstants.P,
                 FlywheelsConstants.I,
                 FlywheelsConstants.D,
-                ExponentialProfilePIDController.createFlywheelConstraints()
+                ExponentialProfilePIDController.createFlywheelConstraints(
+                    Volts.of(12.0),
+                    DCMotor.getNEO(1),
+                    Kilograms.of(0.0),
+                    Meters.of(0.0),
+                    MechanismGearing(
+                        GearBox.fromReductionStages(
+                            1.0
+                        )
+                    )
+                )
             )
         )
         .withGearing(
@@ -84,53 +102,22 @@ object FlywheelsSubsystem : SubsystemBase() {
         .withMotorInverted(true)
         .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
-    private val fullMotorBottom = SparkWrapper(flywheelMotorBottom, DCMotor.getNEO(1),
-        FlywheelsSubsystem.motorConfigBottom
-    )
-
-    private val positionConfig = MechanismPositionConfig()
-        .withMaxRobotHeight(RobotConstants.maxHeight)
-        .withMaxRobotLength(RobotConstants.maxLength)
-
-
-    private val fullConfig = ArmConfig(fullMotorBottom)
-        .withMOI(FlywheelsConstants.moi.`in`(KilogramSquareMeters))
-        .withHardLimit(FlywheelsConstants.hardMin, FlywheelsConstants.hardMax)
-        .withTelemetry("Flywheels", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
-        .withLength(FlywheelsConstants.length)
-        .withStartingPosition(Rotations.of(0.0))
-
-    private val arm = Arm(fullConfig)
-
+    private val fullMotorBottom = SparkWrapper(flywheelMotorBottom, DCMotor.getNEO(1), motorConfigBottom)
 
 
     override fun periodic() {
-        arm.updateTelemetry()
+        fullMotorBottom.updateTelemetry()
+        fullMotorTop.updateTelemetry()
     }
 
     override fun simulationPeriodic() {
-        arm.simIterate()
+
     }
 
-    fun getMechanism2dForElevator(): MechanismObject2d {
-        return arm.mechanismLigament
+    fun setVelocities(angle: AngularVelocity): Command {
+        return runOnce {
+            fullMotorBottom.setVelocity(angle)
+            fullMotorTop.setVelocity(angle)
+        }
     }
-
-    private fun setAngleInstantCommand(angle: Angle): Command {
-        return arm.setAngle(angle)
-    }
-
-    fun setAngleCommand(angle: Angle): Command {
-        return setAngleInstantCommand(angle).andThen(
-            Commands.waitUntil {
-                MathUtil.isNear(angle.`in`(Rotations), arm.angle.`in`(Rotations), 0.05)
-            }
-        )
-    }
-
-    fun sysId(): Command {
-        return arm.sysId(Volts.of(3.0), Volts.of(3.0).per(Second), Seconds.of(30.0))
-    }
-}
-
 }

@@ -2,6 +2,7 @@ package org.sert2521.bunnybots2025
 
 import edu.wpi.first.units.Units.Inches
 import edu.wpi.first.units.Units.KilogramSquareMeters
+import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.Units.Rotations
 import edu.wpi.first.wpilibj.RobotBase
 import yams.gearing.GearBox
@@ -63,5 +64,7 @@ object FlywheelsConstants {
             0.0 / 0.0
         )
     )
+    val topMotorVelocity = RPM.of(0.0)
+    val bottomMotorVelocity = RPM.of(0.0)
 }
 
