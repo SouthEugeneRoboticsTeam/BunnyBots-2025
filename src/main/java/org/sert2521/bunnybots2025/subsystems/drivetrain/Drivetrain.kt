@@ -6,7 +6,6 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import dev.doglog.DogLog
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
-import edu.wpi.first.math.estimator.PoseEstimator
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.geometry.Pose2d
@@ -48,7 +47,6 @@ import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.moduleTr
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.moduleZeroRotations
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.wheelRadius
 import yams.mechanisms.config.SwerveModuleConfig
-import yams.mechanisms.swerve.SwerveDrive
 import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
