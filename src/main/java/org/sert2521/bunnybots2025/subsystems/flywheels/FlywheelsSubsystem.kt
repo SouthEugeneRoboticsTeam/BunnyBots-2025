@@ -2,27 +2,16 @@ package org.sert2521.bunnybots2025.subsystems.flywheels
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.*
-import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.AngularVelocity
-import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.FlywheelsConstants
-import org.sert2521.bunnybots2025.FlywheelsConstants.bottomMotorVelocity
-import org.sert2521.bunnybots2025.FlywheelsConstants.topMotorVelocity
-import org.sert2521.bunnybots2025.RobotConstants
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 import yams.math.ExponentialProfilePIDController
-import yams.mechanisms.config.ArmConfig
-import yams.mechanisms.config.MechanismPositionConfig
-import yams.mechanisms.config.ShooterConfig
-import yams.mechanisms.positional.Arm
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 
@@ -110,7 +99,7 @@ object FlywheelsSubsystem : SubsystemBase() {
         fullMotorTop.updateTelemetry()
     }
 
-    override fun simulationPeriodic() {
+    override     fun simulationPeriodic() {
 
     }
 

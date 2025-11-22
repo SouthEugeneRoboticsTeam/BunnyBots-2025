@@ -15,6 +15,8 @@ object ElectronicIDs{
     const val WRIST_MOTOR_ID = 14
     const val FLYWHEEL_MOTOR_TOP_ID = 17
     const val FLYWHEEL_MOTOR_BOTTOM_ID = 18
+    const val INDEXER_MOTOR_ID = 19
+    const val KICKER_MOTOR_ID = 20
 }
 
 object RobotConstants {
@@ -66,5 +68,11 @@ object FlywheelsConstants {
     )
     val topMotorVelocity = RPM.of(0.0)
     val bottomMotorVelocity = RPM.of(0.0)
+}
+
+object IndexerConstants {
+    const val P = 0.0
+    const val I = 0.0
+    const val D = 0.0
 }
 
