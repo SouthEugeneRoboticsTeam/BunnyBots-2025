@@ -57,4 +57,18 @@ object IndexerSubsystem  : SubsystemBase() {
     fun setKickerMotor(dutyCycle: Double) {
             fullMotorKicker.dutyCycle = dutyCycle
     }
+
+    fun index(): Command {
+        return runOnce {
+            setIndexerMotor(0.5)
+            setKickerMotor(-0.3)
+        }
+    }
+
+    fun kick(): Command {
+        return runOnce {
+            setIndexerMotor(0.2)
+            setKickerMotor(0.5)
+        }
+    }
 }

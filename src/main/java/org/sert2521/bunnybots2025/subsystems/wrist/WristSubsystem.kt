@@ -3,6 +3,7 @@ package org.sert2521.bunnybots2025.subsystems.wrist
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.KilogramSquareMeters
@@ -17,8 +18,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.RobotConstants
 import org.sert2521.bunnybots2025.WristConstants
-import yams.gearing.GearBox
-import yams.gearing.MechanismGearing
 import yams.mechanisms.config.ArmConfig
 import yams.mechanisms.config.MechanismPositionConfig
 import yams.mechanisms.positional.Arm
@@ -41,13 +40,13 @@ object WristSubsystem : SubsystemBase() {
         .withMotorInverted(false)
         .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
-    private val SMC = SparkWrapper(wristMotor, DCMotor.getNEO(1), motorConfig)
+    private val smc = SparkWrapper(wristMotor, DCMotor.getNEO(1), motorConfig)
 
     private val positionConfig = MechanismPositionConfig()
         .withMaxRobotHeight(RobotConstants.maxHeight)
         .withMaxRobotLength(RobotConstants.maxLength)
 
-    private val armConfig = ArmConfig(SMC)
+    private val armConfig = ArmConfig(smc)
         .withMOI(WristConstants.moi.`in`(KilogramSquareMeters))
         .withHardLimit(WristConstants.hardMin, WristConstants.hardMax)
         .withTelemetry("Wrist", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
@@ -56,6 +55,7 @@ object WristSubsystem : SubsystemBase() {
 
     private val arm = Arm(armConfig)
 
+    private val stallDebouncer = Debouncer(0.2)
 
     override fun periodic() {
         arm.updateTelemetry()
@@ -83,6 +83,23 @@ object WristSubsystem : SubsystemBase() {
 
     fun toIntake(): Command {
         return setAngleCommand(WristConstants.intakePosition)
+    }
+
+    fun setPower(dutyCycle: Double) {
+        arm.set(dutyCycle)
+    }
+
+    fun resetWristCommand(): Command {
+        return runOnce {
+            setPower(-0.3)
+        }.andThen(Commands.waitUntil {
+            stallDebouncer.calculate(arm.motor.statorCurrent > Amps.of(30.0))
+        }
+        ).andThen(
+            runOnce {
+                arm.motor.setEncoderPosition(Rotations.zero())
+            }
+        )
     }
 
     fun sysId(): Command {
