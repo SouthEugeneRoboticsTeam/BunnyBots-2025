@@ -11,13 +11,9 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.FlywheelsConstants
-import org.sert2521.bunnybots2025.WristConstants
-import yams.gearing.GearBox
-import yams.gearing.MechanismGearing
 import yams.math.ExponentialProfilePIDController
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
-import yams.mechanisms.config.FlyWheelConfig
 
 object FlywheelsSubsystem : SubsystemBase() {
     private val flywheelMotorTop = SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_TOP_ID, SparkLowLevel.MotorType.kBrushless)

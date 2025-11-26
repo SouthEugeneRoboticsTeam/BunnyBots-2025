@@ -1,7 +1,6 @@
 package org.sert2521.bunnybots2025
 
 import edu.wpi.first.units.Units.*
-import edu.wpi.first.wpilibj.RobotBase
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 
@@ -9,6 +8,7 @@ import yams.gearing.MechanismGearing
 // ElectronicIDs always goes on the bottom for quick access/readability
 object ElectronicIDs{
     const val WRIST_MOTOR_ID = 14
+    const val INTAKE_MOTOR_ID = 15
     const val FLYWHEEL_MOTOR_TOP_ID = 17
     const val FLYWHEEL_MOTOR_BOTTOM_ID = 18
     const val INDEXER_MOTOR_ID = 19
@@ -75,8 +75,15 @@ object FlywheelsConstants {
 }
 
 object IndexerConstants {
-    const val P = 0.0
-    const val I = 0.0
-    const val D = 0.0
+    val indexerGearing = MechanismGearing(
+        GearBox.fromReductionStages(
+            1.0
+        )
+    )
+    val kickerGearing = MechanismGearing(
+        GearBox.fromReductionStages(
+            1.0
+        )
+    )
 }
 
