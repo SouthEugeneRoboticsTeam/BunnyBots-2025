@@ -4,7 +4,6 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
-import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
@@ -60,8 +59,8 @@ object IndexerSubsystem  : SubsystemBase() {
 
     fun index(): Command {
         return runOnce {
-            setIndexerMotor(0.5)
-            setKickerMotor(-0.3)
+            setIndexerMotor(0.3)
+            setKickerMotor(-0.5)
         }
     }
 
