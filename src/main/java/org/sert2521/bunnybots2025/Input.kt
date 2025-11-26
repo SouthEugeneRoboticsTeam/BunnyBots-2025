@@ -2,6 +2,8 @@ package org.sert2521.bunnybots2025
 
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.wpilibj.GenericHID
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
@@ -19,16 +21,13 @@ object Input {
 
     private val resetRotOffset = driverController.y()
 
-
-
     private var rotationOffset = Rotation2d(0.0)
 
     init {
         exampleDriverButton.whileTrue(Commands.none())
         exampleGunnerButton.onTrue(Commands.none())
 
-        resetRotOffset.onTrue(Commands.runOnce({ rotationOffset = Rotation2d.kZero /*Drivetrain.getPose().rotation*/ }))
-
+        resetRotOffset.onTrue(Commands.runOnce({ rotationOffset = Drivetrain.getPose().rotation }))
     }
 
 
@@ -55,5 +54,15 @@ object Input {
 
     fun getRotOffset():Rotation2d{
         return rotationOffset
+    }
+
+    fun setRumble(amount: Double) {
+        driverController.setRumble(GenericHID.RumbleType.kBothRumble, amount)
+    }
+
+    fun rumbleBlip(): Command {
+        return Commands.runOnce({ setRumble(0.8) })
+            .andThen(Commands.waitSeconds(0.2))
+            .andThen(Commands.runOnce({ setRumble(0.0) }))
     }
 }

@@ -52,6 +52,14 @@ object SwerveConstants {
     const val HEADING_I = 0.0
     const val HEADING_D = 0.0
 
+    const val TRANSLATION_VISION_P = 0.0
+    const val TRANSLATION_VISION_D = 0.0
+
+    const val TRANSLATION_OUTPUT_MIN = 0.0
+
+    const val HEADING_VISION_P = 0.0
+    const val HEADING_VISION_D = 0.0
+
     val maxSpeed: LinearVelocity = MetersPerSecond.of(4.571)
 
     const val SYS_ID_FF_RAMP_RATE = 1.0

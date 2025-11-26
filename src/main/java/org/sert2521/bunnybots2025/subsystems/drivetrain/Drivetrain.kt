@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import limelight.Limelight
 import org.sert2521.bunnybots2025.commands.JoystickDrive
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.ANGLE_CURRENT_LIMIT
@@ -66,14 +66,14 @@ object Drivetrain : SubsystemBase() {
             .withClosedLoopController(DRIVE_P, DRIVE_I, DRIVE_D)
             .withGearing(driveGearing)
             .withStatorCurrentLimit(Amps.of(DRIVE_CURRENT_LIMIT))
-            //.withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+        //.withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val angleConfig = SmartMotorControllerConfig(this)
             .withClosedLoopController(ANGLE_P, ANGLE_I, ANGLE_D)
             .withContinuousWrapping(Radians.of(-PI), Radians.of(PI))
             .withGearing(angleGearing)
             .withStatorCurrentLimit(Amps.of(ANGLE_CURRENT_LIMIT))
-            //.withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+        //.withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val fullDriveMotorController = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
         val fullAngleMotorController = SparkWrapper(angleMotor, DCMotor.getNEO(1), angleConfig)
@@ -149,7 +149,10 @@ object Drivetrain : SubsystemBase() {
 
         val chassisSpeeds = kinematics.toChassisSpeeds(moduleStates)
         DogLog.log("Drivetrain/ChassisSpeeds/Measured", chassisSpeeds)
-        DogLog.log("Drivetrain/ChassisSpeeds/Measured Drive Speed", hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond))
+        DogLog.log(
+            "Drivetrain/ChassisSpeeds/Measured Drive Speed",
+            hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
+        )
 
         if (DriverStation.isDisabled()) {
             DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
@@ -161,7 +164,7 @@ object Drivetrain : SubsystemBase() {
         if (!simTimer.isRunning) {
             simTimer.start()
         }
-        // modules.forEach { it.simIterate() }
+        modules[0].simIterate()
         simGyroAngle = simGyroAngle.plus(
             Radians.of(
                 kinematics.toChassisSpeeds(getModuleStates()).omegaRadiansPerSecond * simTimer.get()
@@ -201,7 +204,10 @@ object Drivetrain : SubsystemBase() {
     fun driveRobotRelative(speeds: ChassisSpeeds) {
         val discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02)
         DogLog.log("Drivetrain/ChassisSpeeds/Setpoints", speeds)
-        DogLog.log("Drivetrain/ChassisSpeeds/Setpoint Drive Speed", hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond))
+        DogLog.log(
+            "Drivetrain/ChassisSpeeds/Setpoint Drive Speed",
+            hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)
+        )
 
         val setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds)
         SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, SwerveConstants.maxSpeed)
@@ -251,7 +257,18 @@ object Drivetrain : SubsystemBase() {
                 biggestTag = i
             }
         }
-        return Optional.of(latestResults[biggestTag].targetPose_RobotSpace2D)
+
+        return Optional.of(latestResults[biggestTag].robotPose_TargetSpace2D)
+    }
+
+    fun getVisionPoseToTarget(target:Pose2d):Pose2d {
+        val visionPose = getVisionPose()
+
+        return if (visionPose.isPresent){
+            target.relativeTo(visionPose.get())
+        } else {
+            Pose2d.kZero
+        }
     }
 
     fun runFFCharacterization(output: Double): Double {
