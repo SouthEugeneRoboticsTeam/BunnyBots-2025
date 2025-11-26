@@ -15,30 +15,30 @@ import yams.motorcontrollers.local.SparkWrapper
 object IntakeSubsystem : SubsystemBase() {
     private val intakeMotor = SparkMax(ElectronicIDs.INTAKE_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
-    private val motorConfig = SmartMotorControllerConfig(this)
+    private val intakeMotorConfig = SmartMotorControllerConfig(this)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withMotorInverted(false)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withTelemetry(SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withGearing(IntakeConstants.gearing)
 
-    private val SMC = SparkWrapper(intakeMotor, DCMotor.getNEO(1), motorConfig)
+    private val intakeSMC = SparkWrapper(intakeMotor, DCMotor.getNEO(1), intakeMotorConfig)
 
     init {
         defaultCommand = runOnce {
-            SMC.dutyCycle = 0.0
+            intakeSMC.dutyCycle = 0.0
         }.andThen(
             Commands.idle(this)
         )
     }
 
     override fun periodic() {
-        SMC.updateTelemetry()
+        intakeSMC.updateTelemetry()
     }
 
     private fun setMotor(dutyCycle:Double): Command {
         return runOnce{
-            SMC.dutyCycle = dutyCycle
+            intakeSMC.dutyCycle = dutyCycle
         }
     }
 

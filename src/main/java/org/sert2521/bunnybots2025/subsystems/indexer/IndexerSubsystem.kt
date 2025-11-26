@@ -14,7 +14,7 @@ import yams.motorcontrollers.local.SparkWrapper
 object IndexerSubsystem  : SubsystemBase() {
     private val indexerMotor = SparkMax(ElectronicIDs.INDEXER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
-    private val motorConfigIndexer = SmartMotorControllerConfig(this)
+    private val indexerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(
             IndexerConstants.indexerGearing
         )
@@ -24,11 +24,11 @@ object IndexerSubsystem  : SubsystemBase() {
         .withMotorInverted(false)
         .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
-    private val fullMotorIndexer = SparkWrapper(indexerMotor, DCMotor.getNEO(1), motorConfigIndexer)
+    private val indexerSMC = SparkWrapper(indexerMotor, DCMotor.getNEO(1), indexerMotorConfig)
 
     private val kickerMotor = SparkMax(ElectronicIDs.KICKER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
-    private val motorConfigKicker = SmartMotorControllerConfig(this)
+    private val kickerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(
             IndexerConstants.kickerGearing
         )
@@ -38,23 +38,24 @@ object IndexerSubsystem  : SubsystemBase() {
         .withMotorInverted(false)
         .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
-    private val fullMotorKicker = SparkWrapper(kickerMotor, DCMotor.getNEO(1), motorConfigKicker)
+    private val kickerSMC = SparkWrapper(kickerMotor, DCMotor.getNEO(1), kickerMotorConfig)
 
     override fun periodic() {
-        fullMotorIndexer.updateTelemetry()
-        fullMotorKicker.updateTelemetry()
+        indexerSMC.updateTelemetry()
+        kickerSMC.updateTelemetry()
     }
 
     override fun simulationPeriodic() {
-
+        indexerSMC.simIterate()
+        kickerSMC.simIterate()
     }
 
     fun setIndexerMotor(dutyCycle: Double) {
-            fullMotorIndexer.dutyCycle = dutyCycle
+            indexerSMC.dutyCycle = dutyCycle
     }
 
     fun setKickerMotor(dutyCycle: Double) {
-            fullMotorKicker.dutyCycle = dutyCycle
+            kickerSMC.dutyCycle = dutyCycle
     }
 
     fun index(): Command {

@@ -51,6 +51,7 @@ import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import java.util.*
+import java.util.function.Consumer
 import kotlin.math.PI
 import kotlin.math.hypot
 
@@ -164,7 +165,9 @@ object Drivetrain : SubsystemBase() {
         if (!simTimer.isRunning) {
             simTimer.start()
         }
-        modules[0].simIterate()
+
+        modules.forEach { it.simIterate() }
+
         simGyroAngle = simGyroAngle.plus(
             Radians.of(
                 kinematics.toChassisSpeeds(getModuleStates()).omegaRadiansPerSecond * simTimer.get()
