@@ -51,7 +51,6 @@ import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import java.util.*
-import java.util.function.Consumer
 import kotlin.math.PI
 import kotlin.math.hypot
 
@@ -146,7 +145,6 @@ object Drivetrain : SubsystemBase() {
         poseEstimator.update(Rotation2d(getGyroAngle()), getModulePositions())
 
         val moduleStates = getModuleStates()
-        DogLog.log("Drivetrain/SwerveModuleStates/Measured", moduleStates)
 
         val chassisSpeeds = kinematics.toChassisSpeeds(moduleStates)
         DogLog.log("Drivetrain/ChassisSpeeds/Measured", chassisSpeeds)
@@ -154,11 +152,6 @@ object Drivetrain : SubsystemBase() {
             "Drivetrain/ChassisSpeeds/Measured Drive Speed",
             hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
         )
-
-        if (DriverStation.isDisabled()) {
-            DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
-            DogLog.log("Drivetrain/SwerveModuleStates/Optimized Setpoints", Array(4) { SwerveModuleState() })
-        }
     }
 
     override fun simulationPeriodic() {
