@@ -19,14 +19,14 @@ object IntakeSubsystem : SubsystemBase() {
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withMotorInverted(false)
         .withStatorCurrentLimit(Amps.of(40.0))
-        .withTelemetry(SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Intake Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withGearing(IntakeConstants.gearing)
 
     private val intakeSMC = SparkWrapper(intakeMotor, DCMotor.getNEO(1), intakeMotorConfig)
 
     init {
         defaultCommand = runOnce {
-            intakeSMC.dutyCycle = 0.0
+            setMotor(0.0)
         }.andThen(
             Commands.idle(this)
         )
@@ -36,17 +36,19 @@ object IntakeSubsystem : SubsystemBase() {
         intakeSMC.updateTelemetry()
     }
 
-    private fun setMotor(dutyCycle:Double): Command {
-        return runOnce{
-            intakeSMC.dutyCycle = dutyCycle
-        }
+    private fun setMotor(dutyCycle:Double) {
+        intakeSMC.dutyCycle = dutyCycle
     }
 
     fun runIntake():Command{
-        return setMotor(IntakeConstants.intakeSpeed)
+        return runOnce{
+            setMotor(IntakeConstants.intakeSpeed)
+        }
     }
 
     fun runReverse():Command{
-        return setMotor(IntakeConstants.reverseSpeed)
+        return runOnce{
+            setMotor(IntakeConstants.reverseSpeed)
+        }
     }
 }

@@ -73,10 +73,10 @@ object Drivetrain : SubsystemBase() {
             .withStatorCurrentLimit(angleCurrentLimit)
         //.withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
-        val fullDriveMotorController = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
-        val fullAngleMotorController = SparkWrapper(angleMotor, DCMotor.getNEO(1), angleConfig)
+        val driveSMC = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
+        val angleSMC = SparkWrapper(angleMotor, DCMotor.getNEO(1), angleConfig)
 
-        val moduleConfig = SwerveModuleConfig(fullDriveMotorController, fullAngleMotorController)
+        val moduleConfig = SwerveModuleConfig(driveSMC, angleSMC)
             .withAbsoluteEncoderOffset(rotationZero)
             .withAbsoluteEncoder(absoluteEncoder.absolutePosition.asSupplier())
             .withTelemetry(moduleName, SmartMotorControllerConfig.TelemetryVerbosity.LOW)

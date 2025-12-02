@@ -16,8 +16,8 @@ import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 
 object FlywheelsSubsystem : SubsystemBase() {
-    private val flywheelMotorTop = SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_TOP_ID, SparkLowLevel.MotorType.kBrushless)
-    private val flywheelMotorBottom =
+    private val motorTop = SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_TOP_ID, SparkLowLevel.MotorType.kBrushless)
+    private val motorBottom =
         SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_BOTTOM_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val motorConfigTop = SmartMotorControllerConfig(this)
@@ -62,39 +62,39 @@ object FlywheelsSubsystem : SubsystemBase() {
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(true)
 
-    private val SMCTop = SparkWrapper(flywheelMotorTop, DCMotor.getNEO(1), motorConfigTop)
-    private val SMCBottom = SparkWrapper(flywheelMotorBottom, DCMotor.getNEO(1), motorConfigBottom)
+    private val topSMC = SparkWrapper(motorTop, DCMotor.getNEO(1), motorConfigTop)
+    private val bottomSMC = SparkWrapper(motorBottom, DCMotor.getNEO(1), motorConfigBottom)
 
     override fun periodic() {
-        SMCTop.updateTelemetry()
-        SMCBottom.updateTelemetry()
+        topSMC.updateTelemetry()
+        bottomSMC.updateTelemetry()
     }
 
     override fun simulationPeriodic() {
-        SMCTop.simIterate()
-        SMCBottom.simIterate()
+        topSMC.simIterate()
+        bottomSMC.simIterate()
     }
 
-    private fun setVelocities(velocityTop: AngularVelocity, velocityBottom: AngularVelocity): Command {
+    private fun setVelocitiesCommand(velocityTop: AngularVelocity, velocityBottom: AngularVelocity): Command {
         return runOnce {
-            SMCTop.setVelocity(velocityTop)
-            SMCBottom.setVelocity(velocityBottom)
+            topSMC.setVelocity(velocityTop)
+            bottomSMC.setVelocity(velocityBottom)
         }.andThen(
             Commands.waitUntil {
-                MathUtil.isNear(velocityTop.`in`(RPM), SMCTop.mechanismVelocity.`in`(RPM), 10.0)
-                        && MathUtil.isNear(velocityBottom.`in`(RPM), SMCBottom.mechanismVelocity.`in`(RPM), 10.0)
+                MathUtil.isNear(velocityTop.`in`(RPM), topSMC.mechanismVelocity.`in`(RPM), 10.0)
+                        && MathUtil.isNear(velocityBottom.`in`(RPM), bottomSMC.mechanismVelocity.`in`(RPM), 10.0)
             }
         )
     }
 
     fun rev(): Command {
-        return setVelocities(FlywheelsConstants.topShootTarget, FlywheelsConstants.bottomShootTarget)
+        return setVelocitiesCommand(FlywheelsConstants.topShootTarget, FlywheelsConstants.bottomShootTarget)
     }
 
     fun stop(): Command {
         return runOnce {
-            SMCTop.dutyCycle = 0.0
-            SMCBottom.dutyCycle = 0.0
+            topSMC.dutyCycle = 0.0
+            bottomSMC.dutyCycle = 0.0
         }
     }
 }
