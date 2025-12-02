@@ -51,7 +51,7 @@ object WristSubsystem : SubsystemBase() {
         .withHardLimit(WristConstants.hardMin, WristConstants.hardMax)
         .withTelemetry("Wrist", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withLength(WristConstants.length)
-        .withStartingPosition(Rotations.of(-0.27))
+        .withStartingPosition(Rotations.of(0.0))
 
     private val arm = Arm(armConfig)
 

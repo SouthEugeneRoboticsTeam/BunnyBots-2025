@@ -79,12 +79,12 @@ object FlywheelsConstants {
 object IndexerConstants {
     val indexerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0
+            1.0 // TODO: Change
         )
     )
     val kickerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0
+            1.0 // TODO: Change
         )
     )
 }
