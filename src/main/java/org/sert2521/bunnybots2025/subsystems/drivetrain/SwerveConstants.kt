@@ -14,13 +14,14 @@ object SwerveConstants {
     val angleGearing = MechanismGearing(GearBox.fromReductionStages(150.0/7.0))
 
     val wheelRadius: Distance = Inches.of(2.0)
+    const val WHEEL_COF = 1.54
 
     val moduleNames = arrayOf("Front Left", "Front Right", "Back Left", "Back Right")
     val moduleTranslations = arrayOf(
         Translation2d(Meters.of(0.288925), Meters.of(0.288925)),
-        Translation2d(Meters.of(0.288925), Meters.of(0.288925)),
-        Translation2d(Meters.of(0.288925), Meters.of(0.288925)),
-        Translation2d(Meters.of(0.288925), Meters.of(0.288925))
+        Translation2d(Meters.of(0.288925), -Meters.of(0.288925)),
+        Translation2d(-Meters.of(0.288925), Meters.of(0.288925)),
+        Translation2d(-Meters.of(0.288925), -Meters.of(0.288925))
     )
     val moduleZeroRotations = arrayOf(
         Radians.of(0.0),
@@ -33,16 +34,14 @@ object SwerveConstants {
     val angleIDs = arrayOf(9, 10, 11, 12)
 
     const val DRIVE_P = 0.0
-    const val DRIVE_I = 0.0
     const val DRIVE_D = 0.0
     const val DRIVE_S = 0.0
     const val DRIVE_V = 0.0
-    const val DRIVE_CURRENT_LIMIT = 0.0
+    val driveCurrentLimit = Amps.of(0.0)
 
     const val ANGLE_P = 0.0
-    const val ANGLE_I = 0.0
     const val ANGLE_D = 0.0
-    const val ANGLE_CURRENT_LIMIT = 0.0
+    val angleCurrentLimit = Amps.of(0.0)
 
     const val TRANSLATION_P = 0.0
     const val TRANSLATION_I = 0.0
@@ -55,12 +54,12 @@ object SwerveConstants {
     const val TRANSLATION_VISION_P = 0.0
     const val TRANSLATION_VISION_D = 0.0
 
-    const val TRANSLATION_OUTPUT_MIN = 0.0
-
     const val HEADING_VISION_P = 0.0
     const val HEADING_VISION_D = 0.0
 
-    val maxSpeed: LinearVelocity = MetersPerSecond.of(4.571)
+    const val TRANSLATION_OUTPUT_MIN = 0.0
+
+    val maxSpeed = MetersPerSecond.of(4.571)
 
     const val SYS_ID_FF_RAMP_RATE = 1.0
 }

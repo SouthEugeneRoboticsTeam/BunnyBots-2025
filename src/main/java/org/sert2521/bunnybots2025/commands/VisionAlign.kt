@@ -10,7 +10,7 @@ import org.sert2521.bunnybots2025.subsystems.drivetrain.Drivetrain
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants
 
 class VisionAlign(private val target: Pose2d) : Command() {
-    var poseError = Pose2d.kZero
+    private var poseError = Pose2d.kZero
     private val translationPID =
         PIDController(SwerveConstants.TRANSLATION_VISION_P, 0.0, SwerveConstants.TRANSLATION_VISION_D)
     private val rotationPID = PIDController(SwerveConstants.HEADING_VISION_P, 0.0, SwerveConstants.HEADING_VISION_D)
@@ -39,7 +39,7 @@ class VisionAlign(private val target: Pose2d) : Command() {
             Drivetrain.driveRobotRelative(ChassisSpeeds(0.0, 0.0, rotationOutput))
             if (alignDebouncer.calculate(true)){
                 if (!rumbled){
-                    if (!rumbleBlip.isFinished){
+                    if (!rumbleBlip.isScheduled){
                         rumbleBlip.schedule()
                         rumbled = true
                     }

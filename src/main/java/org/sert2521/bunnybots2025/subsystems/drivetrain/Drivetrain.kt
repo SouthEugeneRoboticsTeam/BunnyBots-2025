@@ -27,18 +27,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import limelight.Limelight
 import org.sert2521.bunnybots2025.commands.JoystickDrive
-import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.ANGLE_CURRENT_LIMIT
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.ANGLE_D
-import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.ANGLE_I
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.ANGLE_P
-import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.DRIVE_CURRENT_LIMIT
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.DRIVE_D
-import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.DRIVE_I
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.DRIVE_P
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.DRIVE_S
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.DRIVE_V
+import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.angleCurrentLimit
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.angleGearing
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.angleIDs
+import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.driveCurrentLimit
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.driveGearing
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.driveIDs
 import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants.encoderIDs
@@ -63,16 +61,16 @@ object Drivetrain : SubsystemBase() {
             .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
             .withWheelDiameter(wheelRadius * 2.0)
             .withFeedforward(SimpleMotorFeedforward(DRIVE_S, DRIVE_V))
-            .withClosedLoopController(DRIVE_P, DRIVE_I, DRIVE_D)
+            .withClosedLoopController(DRIVE_P, 0.0, DRIVE_D)
             .withGearing(driveGearing)
-            .withStatorCurrentLimit(Amps.of(DRIVE_CURRENT_LIMIT))
+            .withStatorCurrentLimit(driveCurrentLimit)
         //.withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val angleConfig = SmartMotorControllerConfig(this)
-            .withClosedLoopController(ANGLE_P, ANGLE_I, ANGLE_D)
+            .withClosedLoopController(ANGLE_P, 0.0, ANGLE_D)
             .withContinuousWrapping(Radians.of(-PI), Radians.of(PI))
             .withGearing(angleGearing)
-            .withStatorCurrentLimit(Amps.of(ANGLE_CURRENT_LIMIT))
+            .withStatorCurrentLimit(angleCurrentLimit)
         //.withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val fullDriveMotorController = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
@@ -99,10 +97,11 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
-    private val gyro = Pigeon2(0)
+    private val gyro = Pigeon2(13)
     private val gyroYaw = gyro.yaw.asSupplier()
 
     private val kinematics = SwerveDriveKinematics(*moduleTranslations)
+    private var moduleStates = Array(4){ modules[it].state }
 
     private val poseEstimator = SwerveDrivePoseEstimator(
         kinematics,
@@ -144,7 +143,7 @@ object Drivetrain : SubsystemBase() {
 
         poseEstimator.update(Rotation2d(getGyroAngle()), getModulePositions())
 
-        val moduleStates = getModuleStates()
+        moduleStates = getModuleStates()
 
         val chassisSpeeds = kinematics.toChassisSpeeds(moduleStates)
         DogLog.log("Drivetrain/ChassisSpeeds/Measured", chassisSpeeds)
@@ -152,6 +151,11 @@ object Drivetrain : SubsystemBase() {
             "Drivetrain/ChassisSpeeds/Measured Drive Speed",
             hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
         )
+
+        if (DriverStation.isDisabled()) {
+            DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
+            DogLog.log("Drivetrain/SwerveModuleStates/Optimized Setpoints", Array(4) { SwerveModuleState() })
+        }
     }
 
     override fun simulationPeriodic() {
@@ -197,6 +201,10 @@ object Drivetrain : SubsystemBase() {
     }
 
     /* Public Functions */
+    fun getChassisSpeeds():ChassisSpeeds{
+        return kinematics.toChassisSpeeds(getModuleStates())
+    }
+
     fun driveRobotRelative(speeds: ChassisSpeeds) {
         val discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02)
         DogLog.log("Drivetrain/ChassisSpeeds/Setpoints", speeds)
@@ -216,16 +224,14 @@ object Drivetrain : SubsystemBase() {
     }
 
     fun stopDrivePID() {
-        for (module in modules) {
-            module.config.driveMotor.setKp(0.0)
-            module.config.driveMotor.setKd(0.0)
+        modules.forEach {
+            it.config.driveMotor.setFeedback(0.0, 0.0, 0.0)
         }
     }
 
     fun startDrivePID() {
-        for (module in modules) {
-            module.config.driveMotor.setKp(DRIVE_P)
-            module.config.driveMotor.setKd(DRIVE_D)
+        modules.forEach {
+            it.config.driveMotor.setFeedback(DRIVE_P, 0.0, DRIVE_D)
         }
     }
 

@@ -18,6 +18,8 @@ object ElectronicIDs{
 object RobotConstants {
     val maxHeight = Inches.of(84.0)
     val maxLength = Inches.of(21.4).plus(Inches.of(14.0))
+
+    val mass = Kilograms.of(0.0)
 }
 
 object WristConstants {

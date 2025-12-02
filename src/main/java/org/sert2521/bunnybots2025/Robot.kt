@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import edu.wpi.first.wpilibj2.command.Commands
 import org.sert2521.bunnybots2025.subsystems.drivetrain.Drivetrain
 import org.sert2521.bunnybots2025.util.SwerveControlUtil
 
@@ -25,9 +26,7 @@ import org.sert2521.bunnybots2025.util.SwerveControlUtil
  * object or package, it will get changed everywhere.)
  */
 object Robot : TimedRobot() {
-
-    private var autonomousCommand: Command? = null
-
+    private var autonomousCommand = Commands.none()
 
     override fun robotInit() {
         // Report the use of the Kotlin Language for "FRC Usage Report" statistics
@@ -58,7 +57,9 @@ object Robot : TimedRobot() {
 
     override fun autonomousInit() {
         Drivetrain.startDrivePID()
-        autonomousCommand?.schedule()
+
+        autonomousCommand = Autos.getAutonomousCommand()
+        autonomousCommand.schedule()
     }
 
     override fun autonomousPeriodic() {
@@ -66,7 +67,7 @@ object Robot : TimedRobot() {
     }
 
     override fun teleopInit() {
-        autonomousCommand?.cancel()
+        autonomousCommand.cancel()
 
         if (!isReal()) {
             SwerveControlUtil.squarenessCommand(Input::getLeftX, Input::getLeftY).schedule()
