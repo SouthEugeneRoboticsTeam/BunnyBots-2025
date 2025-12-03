@@ -42,10 +42,6 @@ object WristSubsystem : SubsystemBase() {
 
     private val smc = SparkWrapper(wristMotor, DCMotor.getNEO(1), motorConfig)
 
-    private val positionConfig = MechanismPositionConfig()
-        .withMaxRobotHeight(RobotConstants.maxHeight)
-        .withMaxRobotLength(RobotConstants.maxLength)
-
     private val armConfig = ArmConfig(smc)
         .withMOI(WristConstants.moi.`in`(KilogramSquareMeters))
         .withHardLimit(WristConstants.hardMin, WristConstants.hardMax)
