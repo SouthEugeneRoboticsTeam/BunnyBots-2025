@@ -39,7 +39,7 @@ object SwerveConstants {
     const val DRIVE_V = 0.0
     val driveCurrentLimit = Amps.of(0.0)
 
-    const val ANGLE_P = 0.0
+    const val ANGLE_P = 3.0
     const val ANGLE_D = 0.0
     val angleCurrentLimit = Amps.of(0.0)
 
@@ -65,11 +65,9 @@ object SwerveConstants {
 }
 
 object DriveConfig {
-    const val DRIVE_SPEED = 0.0
-    const val DRIVE_SPEED_SLOW = 0.0
+    const val DRIVE_SPEED = 1.0
 
-    const val ROT_SPEED = 0.0
-    const val ROT_SPEED_SLOW = 0.0
+    const val ROT_SPEED = 1.0
 
     const val DRIVE_ACCELERATION = 0.0
 }

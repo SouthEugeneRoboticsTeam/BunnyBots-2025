@@ -64,14 +64,16 @@ object Drivetrain : SubsystemBase() {
             .withClosedLoopController(DRIVE_P, 0.0, DRIVE_D)
             .withGearing(driveGearing)
             .withStatorCurrentLimit(driveCurrentLimit)
-        //.withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+            .withMomentOfInertia(0.0005267514) // Use the formula MR^2/2
+            .withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val angleConfig = SmartMotorControllerConfig(this)
             .withClosedLoopController(ANGLE_P, 0.0, ANGLE_D)
             .withContinuousWrapping(Radians.of(-PI), Radians.of(PI))
             .withGearing(angleGearing)
             .withStatorCurrentLimit(angleCurrentLimit)
-        //.withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+            .withMomentOfInertia(0.0003195625) // Use the formula MR^2/4 + ML^2/12
+            .withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val driveSMC = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
         val angleSMC = SparkWrapper(angleMotor, DCMotor.getNEO(1), angleConfig)
@@ -144,6 +146,7 @@ object Drivetrain : SubsystemBase() {
         poseEstimator.update(Rotation2d(getGyroAngle()), getModulePositions())
 
         moduleStates = getModuleStates()
+        DogLog.log("Drivetrain/SwerveModuleStates/Measured", moduleStates)
 
         val chassisSpeeds = kinematics.toChassisSpeeds(moduleStates)
         DogLog.log("Drivetrain/ChassisSpeeds/Measured", chassisSpeeds)

@@ -31,8 +31,6 @@ class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
             Input.getRightX() * ROT_SPEED
         )
 
-        // Accel limiting should go here if needed
-
 
         if (fieldOriented) {
             Drivetrain.driveRobotRelative(
