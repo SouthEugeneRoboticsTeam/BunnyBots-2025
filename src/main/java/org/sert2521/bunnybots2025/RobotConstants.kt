@@ -19,7 +19,7 @@ object RobotConstants {
     val maxHeight = Inches.of(84.0)
     val maxLength = Inches.of(21.4).plus(Inches.of(14.0))
 
-    val mass = Kilograms.of(0.0)
+    val mass = Kilograms.of(129.0)
 }
 
 object WristConstants {
@@ -27,9 +27,9 @@ object WristConstants {
     const val I = 0.0
     const val D = 0.0
 
-    val moi = KilogramSquareMeters.of(0.0)
+    val moi = KilogramSquareMeters.of(0.346) // TODO: Double check
 
-    val length = Inches.of(10.8) // TODO: Change
+    val length = Inches.of(15.1)
 
     val hardMin = Rotations.of(-0.27) // TODO: Change
     val hardMax = Rotations.of(0.254) // TODO: Change
@@ -50,7 +50,7 @@ object WristConstants {
 object IntakeConstants {
     val gearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0 // TODO: Change
+            2.0
         )
     )
 
@@ -63,12 +63,12 @@ object FlywheelsConstants {
     const val I = 0.0
     const val D = 0.0
 
-    val mass = Kilograms.of(0.0) // TODO: Change
-    val drumRadius = Inches.of(0.0) // TODO:Change
+    val mass = Kilograms.of(1.0)
+    val drumRadius = Inches.of(2.0)
 
     val gearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0 // TODO: Change
+            2.0
         )
     )
 
@@ -79,12 +79,12 @@ object FlywheelsConstants {
 object IndexerConstants {
     val indexerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0 // TODO: Change
+            6.75
         )
     )
     val kickerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0 // TODO: Change
+            2.0
         )
     )
 }
