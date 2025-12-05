@@ -80,7 +80,13 @@ object Drivetrain : SubsystemBase() {
 
         val moduleConfig = SwerveModuleConfig(driveSMC, angleSMC)
             .withAbsoluteEncoderOffset(rotationZero)
-            .withAbsoluteEncoder(absoluteEncoder.absolutePosition.asSupplier())
+            .withAbsoluteEncoder(
+                if (RobotBase.isReal()){
+                    absoluteEncoder.absolutePosition.asSupplier()
+                } else {
+                    {angleSMC.mechanismPosition}
+                }
+            )
             .withTelemetry(moduleName, SmartMotorControllerConfig.TelemetryVerbosity.LOW)
             .withLocation(location)
             .withOptimization(true)
