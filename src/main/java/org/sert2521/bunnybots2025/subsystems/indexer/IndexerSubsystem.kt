@@ -50,11 +50,11 @@ object IndexerSubsystem  : SubsystemBase() {
         kickerSMC.simIterate()
     }
 
-    fun setIndexerMotor(dutyCycle: Double) {
+    private fun setIndexerMotor(dutyCycle: Double) {
             indexerSMC.dutyCycle = dutyCycle
     }
 
-    fun setKickerMotor(dutyCycle: Double) {
+    private fun setKickerMotor(dutyCycle: Double) {
             kickerSMC.dutyCycle = dutyCycle
     }
 
