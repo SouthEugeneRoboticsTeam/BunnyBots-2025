@@ -45,31 +45,32 @@ object DrivetrainFeedforwardSysId {
                 Drivetrain
             ) // When cancelled, calculate and print results
 
-            .finallyDo {
-                _ ->
-                val n = velocitySamples.size
-                var sumX = 0.0
-                var sumY = 0.0
-                var sumXY = 0.0
-                var sumX2 = 0.0
-                for (i in 0..<n) {
-                    sumX += velocitySamples[i]
-                    sumY += voltageSamples[i]
-                    sumXY += velocitySamples[i] * voltageSamples[i]
-                    sumX2 += velocitySamples[i] * velocitySamples[i]
-                }
-                val kS = (sumY * sumX2 - sumX * sumXY) / (n * sumX2 - sumX * sumX)
-                val kV = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX)
+                .finallyDo { _ ->
+                    val n = velocitySamples.size
+                    var sumX = 0.0
+                    var sumY = 0.0
+                    var sumXY = 0.0
+                    var sumX2 = 0.0
+                    for (i in 0..<n) {
+                        sumX += velocitySamples[i]
+                        sumY += voltageSamples[i]
+                        sumXY += velocitySamples[i] * voltageSamples[i]
+                        sumX2 += velocitySamples[i] * velocitySamples[i]
+                    }
+                    val kS = (sumY * sumX2 - sumX * sumXY) / (n * sumX2 - sumX * sumX)
+                    val kV = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX)
 
-                val formatter: NumberFormat = DecimalFormat("#0.00000")
-                println("********** Drive FF Characterization Results **********")
-                println("\tkS: " + formatter.format(kS))
-                println("\tkV: " + formatter.format(kV))
-                println("\tSample Size" + formatter.format(velocitySamples.size))
-                println("\tMax speed attained: "
-                        + formatter.format(velocitySamples.last()*wheelRadius.`in`(Meters)) + "MPS at "
-                        + formatter.format(voltageSamples.last()) + "V")
-            }
+                    val formatter: NumberFormat = DecimalFormat("#0.00000")
+                    println("********** Drive FF Characterization Results **********")
+                    println("\tkS: " + formatter.format(kS))
+                    println("\tkV: " + formatter.format(kV))
+                    println("\tSample Size" + formatter.format(velocitySamples.size))
+                    println(
+                        "\tMax speed attained: "
+                                + formatter.format(velocitySamples.last() * wheelRadius.`in`(Meters)) + "MPS at "
+                                + formatter.format(voltageSamples.last()) + "V"
+                    )
+                }
         )
     }
 }

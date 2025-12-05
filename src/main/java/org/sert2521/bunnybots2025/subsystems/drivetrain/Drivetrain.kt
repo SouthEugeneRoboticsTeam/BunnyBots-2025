@@ -81,10 +81,10 @@ object Drivetrain : SubsystemBase() {
         val moduleConfig = SwerveModuleConfig(driveSMC, angleSMC)
             .withAbsoluteEncoderOffset(rotationZero)
             .withAbsoluteEncoder(
-                if (RobotBase.isReal()){
+                if (RobotBase.isReal()) {
                     absoluteEncoder.absolutePosition.asSupplier()
                 } else {
-                    {angleSMC.mechanismPosition}
+                    { angleSMC.mechanismPosition }
                 }
             )
             .withTelemetry(moduleName, SmartMotorControllerConfig.TelemetryVerbosity.LOW)
@@ -109,7 +109,7 @@ object Drivetrain : SubsystemBase() {
     private val gyroYaw = gyro.yaw.asSupplier()
 
     private val kinematics = SwerveDriveKinematics(*moduleTranslations)
-    private var moduleStates = Array(4){ modules[it].state }
+    private var moduleStates = Array(4) { modules[it].state }
 
     private val poseEstimator = SwerveDrivePoseEstimator(
         kinematics,
@@ -210,7 +210,7 @@ object Drivetrain : SubsystemBase() {
     }
 
     /* Public Functions */
-    fun getChassisSpeeds():ChassisSpeeds{
+    fun getChassisSpeeds(): ChassisSpeeds {
         return kinematics.toChassisSpeeds(getModuleStates())
     }
 
@@ -272,10 +272,10 @@ object Drivetrain : SubsystemBase() {
         return Optional.of(latestResults[biggestTag].robotPose_TargetSpace2D)
     }
 
-    fun getVisionPoseToTarget(target:Pose2d):Pose2d {
+    fun getVisionPoseToTarget(target: Pose2d): Pose2d {
         val visionPose = getVisionPose()
 
-        return if (visionPose.isPresent){
+        return if (visionPose.isPresent) {
             target.relativeTo(visionPose.get())
         } else {
             Pose2d.kZero

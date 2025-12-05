@@ -37,23 +37,23 @@ object Input {
      *
      * @return Left joystick X, Left joystick Y, Right joystick X
      */
-    fun getJoystickInputs():Triple<Double, Double, Double>{
+    fun getJoystickInputs(): Triple<Double, Double, Double> {
         return Triple(getLeftX(), getLeftY(), getRightX())
     }
 
-    fun getLeftX():Double{
+    fun getLeftX(): Double {
         return -driverController.leftX
     }
 
-    fun getLeftY():Double{
+    fun getLeftY(): Double {
         return -driverController.leftY
     }
 
-    fun getRightX():Double{
+    fun getRightX(): Double {
         return -driverController.rightX
     }
 
-    fun getRotOffset():Rotation2d{
+    fun getRotOffset(): Rotation2d {
         return rotationOffset
     }
 

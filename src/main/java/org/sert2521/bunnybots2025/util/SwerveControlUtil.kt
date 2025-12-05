@@ -17,7 +17,7 @@ import kotlin.math.*
 object SwerveControlUtil {
     private var squareness = 8.1
 
-    fun squarenessCommand(xInputSupplier: Supplier<Double>, yInputSupplier:Supplier<Double>): Command {
+    fun squarenessCommand(xInputSupplier: Supplier<Double>, yInputSupplier: Supplier<Double>): Command {
         val applySquareness = Trigger(DogLog.tunable("Controller Squareness/Apply Squareness Button", false))
         var x: Double
         var y: Double
@@ -33,7 +33,10 @@ object SwerveControlUtil {
             corrInputs = reverseSquareness(x, y)
 
             DogLog.log("Controller Squareness/Uncorrected Controller Input", ChassisSpeeds(y, x, 0.0))
-            DogLog.log("Controller Squareness/Corrected Controller Input", ChassisSpeeds(corrInputs.y, corrInputs.x, 0.0))
+            DogLog.log(
+                "Controller Squareness/Corrected Controller Input",
+                ChassisSpeeds(corrInputs.y, corrInputs.x, 0.0)
+            )
 
             DogLog.log("Controller Squareness/Calculated Squareness", squarenessCharacterize(x, y))
             DogLog.log("Controller Squareness/Angle from 45", squarenessAngleToDiagonal(x, y))
@@ -49,20 +52,22 @@ object SwerveControlUtil {
      *
      * @return The unbiased controller input.
      */
-    fun reverseSquareness(x:Double, y:Double, squarenessValue: Double): Translation2d {
-        val thetaUnconstrained = atan(y/x)
+    fun reverseSquareness(x: Double, y: Double, squarenessValue: Double): Translation2d {
+        val thetaUnconstrained = atan(y / x)
 
         // It's ok to constrain it like this because the squareness graph is symmetric in 8 ways
         // It will turn out to have the same magnitude bias
         // This is just because if not constrained to the first quadrant it creates insanely big numbers or divide by zero
-        val theta = MathUtil.inputModulus(thetaUnconstrained, 0.0, PI/2)
+        val theta = MathUtil.inputModulus(thetaUnconstrained, 0.0, PI / 2)
 
         // This models the output curve of the xbox controller with the specified squareness
-        val magnitudeBias = sqrt((tan(theta).pow(2) + 1) /
-                    ((1 + tan(theta).pow(squarenessValue)).pow(2 / squarenessValue)))
+        val magnitudeBias = sqrt(
+            (tan(theta).pow(2) + 1) /
+                    ((1 + tan(theta).pow(squarenessValue)).pow(2 / squarenessValue))
+        )
         val outputTranslation = Translation2d(x / magnitudeBias, y / magnitudeBias)
 
-        if(outputTranslation.norm>1.0){
+        if (outputTranslation.norm > 1.0) {
             outputTranslation.div(outputTranslation.norm)
         }
 
@@ -74,7 +79,7 @@ object SwerveControlUtil {
      *
      * @return The unbiased controller input.
      */
-    fun reverseSquareness(x:Double, y:Double): Translation2d{
+    fun reverseSquareness(x: Double, y: Double): Translation2d {
         return reverseSquareness(x, y, squareness)
     }
 
@@ -83,7 +88,7 @@ object SwerveControlUtil {
      *
      * @return The unbiased controller input.
      */
-    fun reverseSquareness(xy:Translation2d, squarenessValue: Double): Translation2d{
+    fun reverseSquareness(xy: Translation2d, squarenessValue: Double): Translation2d {
         return reverseSquareness(xy.x, xy.y, squarenessValue)
     }
 
@@ -92,7 +97,7 @@ object SwerveControlUtil {
      *
      * @return The unbiased controller input.
      */
-    fun reverseSquareness(xy:Translation2d): Translation2d{
+    fun reverseSquareness(xy: Translation2d): Translation2d {
         return reverseSquareness(xy, squareness)
     }
 
@@ -103,17 +108,17 @@ object SwerveControlUtil {
      *
      * @return A pair of the calculated squareness and the difference of the controller input from 45 degrees (closer to 0 is better).
      */
-    private fun squarenessCharacterize(x:Double, y:Double):Double{
-        val leg = hypot(x, y)/sqrt(2.0)
+    private fun squarenessCharacterize(x: Double, y: Double): Double {
+        val leg = hypot(x, y) / sqrt(2.0)
 
         return log(0.5, leg)
     }
 
-    private fun squarenessAngleToDiagonal(x:Double, y:Double):Double{
-        val thetaUnconstrained = atan(y/x)
-        val theta = MathUtil.inputModulus(thetaUnconstrained, 0.0, PI/2)
+    private fun squarenessAngleToDiagonal(x: Double, y: Double): Double {
+        val thetaUnconstrained = atan(y / x)
+        val theta = MathUtil.inputModulus(thetaUnconstrained, 0.0, PI / 2)
 
-        return abs(theta-PI/4)
+        return abs(theta - PI / 4)
     }
 
     fun speedLimit(targetFieldSpeeds: ChassisSpeeds, speedLimit: LinearVelocity): ChassisSpeeds {
@@ -126,9 +131,11 @@ object SwerveControlUtil {
             1.0
         }
 
-        return ChassisSpeeds(targetFieldSpeeds.vxMetersPerSecond * magnitudeToApply,
+        return ChassisSpeeds(
+            targetFieldSpeeds.vxMetersPerSecond * magnitudeToApply,
             targetFieldSpeeds.vyMetersPerSecond * magnitudeToApply,
-            targetFieldSpeeds.omegaRadiansPerSecond)
+            targetFieldSpeeds.omegaRadiansPerSecond
+        )
     }
 
     fun accelLimit(

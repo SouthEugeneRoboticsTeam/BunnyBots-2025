@@ -23,7 +23,7 @@ import kotlin.jvm.optionals.getOrElse
 
 object Autos {
 
-    private val autoChooser:SendableChooser<Command>
+    private val autoChooser: SendableChooser<Command>
 
     private val namedCommands = mapOf(
         "Flywheel Rev" to FlywheelsSubsystem.rev(),
@@ -49,7 +49,11 @@ object Autos {
             Drivetrain::getChassisSpeeds,
             Drivetrain::driveRobotRelative,
             PPHolonomicDriveController(
-                PIDConstants(SwerveConstants.TRANSLATION_P, SwerveConstants.TRANSLATION_I, SwerveConstants.TRANSLATION_D),
+                PIDConstants(
+                    SwerveConstants.TRANSLATION_P,
+                    SwerveConstants.TRANSLATION_I,
+                    SwerveConstants.TRANSLATION_D
+                ),
                 PIDConstants(SwerveConstants.HEADING_P, SwerveConstants.HEADING_I, SwerveConstants.HEADING_D)
             ),
             RobotConfig(
@@ -69,7 +73,7 @@ object Autos {
             Drivetrain
         )
 
-        PathPlannerLogging.setLogTargetPoseCallback{
+        PathPlannerLogging.setLogTargetPoseCallback {
             DogLog.log("Odometry/Trajectory Setpoint", it)
         }
 
@@ -77,7 +81,7 @@ object Autos {
         autoChooser.setDefaultOption("None", Commands.none())
     }
 
-    fun getAutonomousCommand():Command{
+    fun getAutonomousCommand(): Command {
         return autoChooser.selected
     }
 }

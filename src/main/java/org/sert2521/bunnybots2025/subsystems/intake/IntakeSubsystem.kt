@@ -36,18 +36,18 @@ object IntakeSubsystem : SubsystemBase() {
         intakeSMC.updateTelemetry()
     }
 
-    private fun setMotor(dutyCycle:Double) {
+    private fun setMotor(dutyCycle: Double) {
         intakeSMC.dutyCycle = dutyCycle
     }
 
-    fun runIntake():Command{
-        return runOnce{
+    fun runIntake(): Command {
+        return runOnce {
             setMotor(IntakeConstants.intakeSpeed)
         }
     }
 
-    fun runReverse():Command{
-        return runOnce{
+    fun runReverse(): Command {
+        return runOnce {
             setMotor(IntakeConstants.reverseSpeed)
         }
     }
