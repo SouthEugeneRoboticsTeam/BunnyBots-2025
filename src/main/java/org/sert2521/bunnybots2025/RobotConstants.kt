@@ -6,7 +6,7 @@ import yams.gearing.MechanismGearing
 
 // If you make more subsystems/constants objects, put them ABOVE this one
 // ElectronicIDs always goes on the bottom for quick access/readability
-object ElectronicIDs{
+object ElectronicIDs {
     const val WRIST_MOTOR_ID = 14
     const val INTAKE_MOTOR_ID = 15
     const val FLYWHEEL_MOTOR_TOP_ID = 17

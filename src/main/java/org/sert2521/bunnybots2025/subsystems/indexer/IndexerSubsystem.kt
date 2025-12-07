@@ -11,7 +11,7 @@ import org.sert2521.bunnybots2025.IndexerConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 
-object IndexerSubsystem  : SubsystemBase() {
+object IndexerSubsystem : SubsystemBase() {
     private val indexerMotor = SparkMax(ElectronicIDs.INDEXER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val indexerMotorConfig = SmartMotorControllerConfig(this)
@@ -50,12 +50,12 @@ object IndexerSubsystem  : SubsystemBase() {
         kickerSMC.simIterate()
     }
 
-    fun setIndexerMotor(dutyCycle: Double) {
-            indexerSMC.dutyCycle = dutyCycle
+    private fun setIndexerMotor(dutyCycle: Double) {
+        indexerSMC.dutyCycle = dutyCycle
     }
 
-    fun setKickerMotor(dutyCycle: Double) {
-            kickerSMC.dutyCycle = dutyCycle
+    private fun setKickerMotor(dutyCycle: Double) {
+        kickerSMC.dutyCycle = dutyCycle
     }
 
     fun index(): Command {

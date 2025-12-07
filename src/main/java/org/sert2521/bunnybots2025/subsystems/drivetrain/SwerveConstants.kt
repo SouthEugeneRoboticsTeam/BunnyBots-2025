@@ -11,7 +11,7 @@ import yams.gearing.MechanismGearing
 
 object SwerveConstants {
     val driveGearing = MechanismGearing(GearBox.fromReductionStages(6.75))
-    val angleGearing = MechanismGearing(GearBox.fromReductionStages(150.0/7.0))
+    val angleGearing = MechanismGearing(GearBox.fromReductionStages(150.0 / 7.0))
 
     val wheelRadius: Distance = Inches.of(2.0)
     const val WHEEL_COF = 1.54

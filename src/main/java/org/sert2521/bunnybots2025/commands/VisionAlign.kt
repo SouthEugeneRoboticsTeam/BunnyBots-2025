@@ -37,9 +37,9 @@ class VisionAlign(private val target: Pose2d) : Command() {
 
         if (translationOutput < SwerveConstants.TRANSLATION_OUTPUT_MIN) {
             Drivetrain.driveRobotRelative(ChassisSpeeds(0.0, 0.0, rotationOutput))
-            if (alignDebouncer.calculate(true)){
-                if (!rumbled){
-                    if (!rumbleBlip.isScheduled){
+            if (alignDebouncer.calculate(true)) {
+                if (!rumbled) {
+                    if (!rumbleBlip.isScheduled) {
                         rumbleBlip.schedule()
                         rumbled = true
                     }
