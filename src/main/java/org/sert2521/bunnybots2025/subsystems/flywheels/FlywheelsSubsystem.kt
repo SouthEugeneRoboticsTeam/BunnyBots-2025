@@ -26,13 +26,18 @@ object FlywheelsSubsystem : SubsystemBase() {
                 FlywheelsConstants.P,
                 FlywheelsConstants.I,
                 FlywheelsConstants.D,
-                ExponentialProfilePIDController.createFlywheelConstraints(
+                ExponentialProfilePIDController.createConstraints(
                     Volts.of(12.0),
-                    DCMotor.getNEO(1),
-                    FlywheelsConstants.mass,
-                    FlywheelsConstants.drumRadius,
-                    FlywheelsConstants.gearing
+                    RotationsPerSecond.of(3000.0),
+                    RotationsPerSecondPerSecond.of(1.0)
                 )
+//                ExponentialProfilePIDController.createFlywheelConstraints(
+//                    Volts.of(12.0),
+//                    DCMotor.getNEO(1),
+//                    FlywheelsConstants.mass,
+//                    FlywheelsConstants.drumRadius,
+//                    FlywheelsConstants.gearing
+//                )
             )
         )
         .withGearing(FlywheelsConstants.gearing)
@@ -47,13 +52,18 @@ object FlywheelsSubsystem : SubsystemBase() {
                 FlywheelsConstants.P,
                 FlywheelsConstants.I,
                 FlywheelsConstants.D,
-                ExponentialProfilePIDController.createFlywheelConstraints(
+                ExponentialProfilePIDController.createConstraints(
                     Volts.of(12.0),
-                    DCMotor.getNEO(1),
-                    FlywheelsConstants.mass,
-                    FlywheelsConstants.drumRadius,
-                    FlywheelsConstants.gearing
+                    RotationsPerSecond.of(3000.0),
+                    RotationsPerSecondPerSecond.of(1.0)
                 )
+//                ExponentialProfilePIDController.createFlywheelConstraints(
+//                    Volts.of(12.0),
+//                    DCMotor.getNEO(1),
+//                    FlywheelsConstants.mass,
+//                    FlywheelsConstants.drumRadius,
+//                    FlywheelsConstants.gearing
+//                )
             )
         )
         .withGearing(FlywheelsConstants.gearing)
@@ -64,6 +74,10 @@ object FlywheelsSubsystem : SubsystemBase() {
 
     private val topSMC = SparkWrapper(motorTop, DCMotor.getNEO(1), motorConfigTop)
     private val bottomSMC = SparkWrapper(motorBottom, DCMotor.getNEO(1), motorConfigBottom)
+
+    init {
+        defaultCommand = stop()
+    }
 
     override fun periodic() {
         topSMC.updateTelemetry()
