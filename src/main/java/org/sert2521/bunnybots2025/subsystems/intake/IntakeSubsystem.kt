@@ -25,11 +25,7 @@ object IntakeSubsystem : SubsystemBase() {
     private val intakeSMC = SparkWrapper(intakeMotor, DCMotor.getNEO(1), intakeMotorConfig)
 
     init {
-        defaultCommand = runOnce {
-            setMotor(0.0)
-        }.andThen(
-            Commands.idle(this)
-        )
+        defaultCommand = stop()
     }
 
     override fun periodic() {
@@ -43,12 +39,24 @@ object IntakeSubsystem : SubsystemBase() {
     fun runIntake(): Command {
         return runOnce {
             setMotor(IntakeConstants.intakeSpeed)
-        }
+        }.andThen(
+            Commands.idle()
+        )
     }
 
     fun runReverse(): Command {
         return runOnce {
             setMotor(IntakeConstants.reverseSpeed)
-        }
+        }.andThen(
+            Commands.idle()
+        )
+    }
+
+    fun stop():Command{
+        return runOnce {
+            setMotor(0.0)
+        }.andThen(
+            Commands.idle()
+        )
     }
 }

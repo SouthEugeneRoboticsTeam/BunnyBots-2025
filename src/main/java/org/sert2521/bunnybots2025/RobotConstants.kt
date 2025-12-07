@@ -87,5 +87,15 @@ object IndexerConstants {
             2.0
         )
     )
+
+    const val MAIN_DEFUALT = 0.0
+    const val KICKER_DEFAULT = 0.0
+
+    const val MAIN_INDEXING = 0.3
+    const val KICKER_INDEXING = -0.5
+
+    const val MAIN_KICKING = 0.2
+    const val KICKER_KICKING = 0.5
+    const val KICK_TIME = 0.2
 }
 

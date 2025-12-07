@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.IndexerConstants
@@ -40,6 +41,10 @@ object IndexerSubsystem : SubsystemBase() {
 
     private val kickerSMC = SparkWrapper(kickerMotor, DCMotor.getNEO(1), kickerMotorConfig)
 
+    init {
+        defaultCommand = default()
+    }
+
     override fun periodic() {
         indexerSMC.updateTelemetry()
         kickerSMC.updateTelemetry()
@@ -58,17 +63,30 @@ object IndexerSubsystem : SubsystemBase() {
         kickerSMC.dutyCycle = dutyCycle
     }
 
+    fun default():Command {
+        return runOnce {
+            setIndexerMotor(IndexerConstants.MAIN_DEFUALT)
+            setKickerMotor(IndexerConstants.KICKER_DEFAULT)
+        }.andThen(
+            Commands.idle()
+        )
+    }
+
     fun index(): Command {
         return runOnce {
-            setIndexerMotor(0.3)
-            setKickerMotor(-0.5)
-        }
+            setIndexerMotor(IndexerConstants.MAIN_INDEXING)
+            setKickerMotor(IndexerConstants.KICKER_INDEXING)
+        }.andThen(
+            Commands.idle()
+        )
     }
 
     fun kick(): Command {
         return runOnce {
-            setIndexerMotor(0.2)
-            setKickerMotor(0.5)
-        }
+            setIndexerMotor(IndexerConstants.MAIN_KICKING)
+            setKickerMotor(IndexerConstants.KICKER_KICKING)
+        }.andThen(
+            Commands.waitSeconds(IndexerConstants.KICK_TIME)
+        )
     }
 }

@@ -34,6 +34,12 @@ object Autos {
         "Run Intake" to IntakeSubsystem.runIntake(),
         "Reverse Intake" to IntakeSubsystem.runReverse(),
 
+        "Intake Routine" to WristSubsystem.toIntake()
+            .andThen(IntakeSubsystem.runIntake()),
+
+        "Stow Routine" to WristSubsystem.toStow()
+            .andThen(IntakeSubsystem.stop()),
+
         "Run Indexer" to Commands.none(),
         "Reverse Indexer" to Commands.none(),
 
