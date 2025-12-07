@@ -1,5 +1,6 @@
 package org.sert2521.bunnybots2025
 
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.units.Units.*
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
@@ -20,6 +21,8 @@ object RobotConstants {
     val maxLength = Inches.of(21.4).plus(Inches.of(14.0))
 
     val mass = Kilograms.of(129.0)
+
+    val targetVisionPose = Pose2d()
 }
 
 object WristConstants {
