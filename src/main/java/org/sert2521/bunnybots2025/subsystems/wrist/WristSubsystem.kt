@@ -81,6 +81,10 @@ object WristSubsystem : SubsystemBase() {
         return setAngleCommand(WristConstants.intakePosition)
     }
 
+    fun toCabbage(): Command {
+        return setAngleCommand(WristConstants.cabbagePosition)
+    }
+
     fun setPower(dutyCycle: Double) {
         arm.set(dutyCycle)
     }
