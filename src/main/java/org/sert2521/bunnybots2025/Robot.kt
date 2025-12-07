@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Commands
 import org.sert2521.bunnybots2025.subsystems.drivetrain.Drivetrain
+import org.sert2521.bunnybots2025.subsystems.flywheels.FlywheelsSubsystem
 import org.sert2521.bunnybots2025.util.SwerveControlUtil
 
 /**
@@ -40,6 +41,8 @@ object Robot : TimedRobot() {
                 .withNtPublish { !DriverStation.isFMSAttached() }
         )
         Drivetrain
+        Input
+        FlywheelsSubsystem
     }
 
 

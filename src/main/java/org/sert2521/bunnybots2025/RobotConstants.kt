@@ -63,8 +63,11 @@ object IntakeConstants {
 
 object FlywheelsConstants {
     const val P = 0.0
-    const val I = 0.0
     const val D = 0.0
+
+    const val S = 0.0
+    const val V = 0.0
+    const val A = 0.0
 
     val mass = Kilograms.of(1.0)
     val drumRadius = Inches.of(2.0)
@@ -75,8 +78,8 @@ object FlywheelsConstants {
         )
     )
 
-    val topShootTarget = RPM.of(0.0) // TODO: Change
-    val bottomShootTarget = RPM.of(0.0) // TODO: Change
+    val topShootTarget = RPM.of(1000.0) // TODO: Change
+    val bottomShootTarget = RPM.of(1000.0) // TODO: Change
 }
 
 object IndexerConstants {

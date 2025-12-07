@@ -2,6 +2,7 @@ package org.sert2521.bunnybots2025.subsystems.indexer
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.wpilibj2.command.Command
@@ -16,28 +17,22 @@ object IndexerSubsystem : SubsystemBase() {
     private val indexerMotor = SparkMax(ElectronicIDs.INDEXER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val indexerMotorConfig = SmartMotorControllerConfig(this)
-        .withGearing(
-            IndexerConstants.indexerGearing
-        )
+        .withGearing(IndexerConstants.indexerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(false)
-        .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
     private val indexerSMC = SparkWrapper(indexerMotor, DCMotor.getNEO(1), indexerMotorConfig)
 
     private val kickerMotor = SparkMax(ElectronicIDs.KICKER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val kickerMotorConfig = SmartMotorControllerConfig(this)
-        .withGearing(
-            IndexerConstants.kickerGearing
-        )
+        .withGearing(IndexerConstants.kickerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(false)
-        .withControlMode(SmartMotorControllerConfig.ControlMode.CLOSED_LOOP)
 
     private val kickerSMC = SparkWrapper(kickerMotor, DCMotor.getNEO(1), kickerMotorConfig)
 

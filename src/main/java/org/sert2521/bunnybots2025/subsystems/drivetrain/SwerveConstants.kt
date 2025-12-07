@@ -33,7 +33,7 @@ object SwerveConstants {
     val driveIDs = arrayOf(5, 6, 7, 8)
     val angleIDs = arrayOf(9, 10, 11, 12)
 
-    const val DRIVE_P = 0.0
+    const val DRIVE_P = 1.0
     const val DRIVE_D = 0.0
     const val DRIVE_S = 0.0
     const val DRIVE_V = 0.0

@@ -2,7 +2,9 @@ package org.sert2521.bunnybots2025.subsystems.flywheels
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import dev.doglog.DogLog
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.AngularVelocity
@@ -21,25 +23,7 @@ object FlywheelsSubsystem : SubsystemBase() {
         SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_BOTTOM_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val motorConfigTop = SmartMotorControllerConfig(this)
-        .withClosedLoopController(
-            ExponentialProfilePIDController(
-                FlywheelsConstants.P,
-                FlywheelsConstants.I,
-                FlywheelsConstants.D,
-                ExponentialProfilePIDController.createConstraints(
-                    Volts.of(12.0),
-                    RotationsPerSecond.of(3000.0),
-                    RotationsPerSecondPerSecond.of(1.0)
-                )
-//                ExponentialProfilePIDController.createFlywheelConstraints(
-//                    Volts.of(12.0),
-//                    DCMotor.getNEO(1),
-//                    FlywheelsConstants.mass,
-//                    FlywheelsConstants.drumRadius,
-//                    FlywheelsConstants.gearing
-//                )
-            )
-        )
+        .withClosedLoopController(FlywheelsConstants.P, 0.0, FlywheelsConstants.D)
         .withGearing(FlywheelsConstants.gearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Flywheel Motor Top", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
@@ -47,25 +31,8 @@ object FlywheelsSubsystem : SubsystemBase() {
         .withMotorInverted(false)
 
     private val motorConfigBottom = SmartMotorControllerConfig(this)
-        .withClosedLoopController(
-            ExponentialProfilePIDController(
-                FlywheelsConstants.P,
-                FlywheelsConstants.I,
-                FlywheelsConstants.D,
-                ExponentialProfilePIDController.createConstraints(
-                    Volts.of(12.0),
-                    RotationsPerSecond.of(3000.0),
-                    RotationsPerSecondPerSecond.of(1.0)
-                )
-//                ExponentialProfilePIDController.createFlywheelConstraints(
-//                    Volts.of(12.0),
-//                    DCMotor.getNEO(1),
-//                    FlywheelsConstants.mass,
-//                    FlywheelsConstants.drumRadius,
-//                    FlywheelsConstants.gearing
-//                )
-            )
-        )
+        .withClosedLoopController(FlywheelsConstants.P, 0.0, FlywheelsConstants.D)
+        .withFeedforward(SimpleMotorFeedforward(FlywheelsConstants.S, FlywheelsConstants.V, FlywheelsConstants.A))
         .withGearing(FlywheelsConstants.gearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Flywheel Motor Bottom", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
