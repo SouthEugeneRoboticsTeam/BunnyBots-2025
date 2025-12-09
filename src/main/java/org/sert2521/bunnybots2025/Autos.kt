@@ -26,6 +26,8 @@ object Autos {
     private val autoChooser: SendableChooser<Command>
 
     private val namedCommands = mapOf(
+        "Init Wrist" to WristSubsystem.resetWristCommand(),
+
         "Flywheel Rev" to FlywheelsSubsystem.rev(),
 
         "Wrist to Intake" to WristSubsystem.toIntake(),
@@ -64,7 +66,7 @@ object Autos {
             ),
             RobotConfig(
                 RobotConstants.mass,
-                Units.KilogramSquareMeters.of(0.02),
+                RobotConstants.moi,
                 ModuleConfig(
                     SwerveConstants.wheelRadius,
                     SwerveConstants.maxSpeed,

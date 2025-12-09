@@ -2,7 +2,6 @@ package org.sert2521.bunnybots2025.subsystems.indexer
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
-import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.wpilibj2.command.Command
@@ -58,9 +57,9 @@ object IndexerSubsystem : SubsystemBase() {
         kickerSMC.dutyCycle = dutyCycle
     }
 
-    fun default():Command {
+    private fun default(): Command {
         return runOnce {
-            setIndexerMotor(IndexerConstants.MAIN_DEFUALT)
+            setIndexerMotor(IndexerConstants.MAIN_DEFAULT)
             setKickerMotor(IndexerConstants.KICKER_DEFAULT)
         }.andThen(
             Commands.idle()

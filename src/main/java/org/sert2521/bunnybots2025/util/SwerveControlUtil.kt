@@ -14,6 +14,12 @@ import org.sert2521.bunnybots2025.Input
 import java.util.function.Supplier
 import kotlin.math.*
 
+/**
+ *  A lot of this code refers to "squareness"
+ *  Basically we're trying to reverse the weird square-circle output curve from a lot of xbox controllers
+ *  It models the output curve as x^n + y^n = 1, where n is the xbox controller's "squareness"
+ *  Higher n means more square-like. n=2 is a perfect circle, n approaching infinity approaches a square
+ */
 object SwerveControlUtil {
     private var squareness = 8.1
 
@@ -53,6 +59,10 @@ object SwerveControlUtil {
      * @return The unbiased controller input.
      */
     fun reverseSquareness(x: Double, y: Double, squarenessValue: Double): Translation2d {
+        if (x == 0.0 || y == 0.0) {
+            return Translation2d(x, y)
+        }
+
         val thetaUnconstrained = atan(y / x)
 
         // It's ok to constrain it like this because the squareness graph is symmetric in 8 ways

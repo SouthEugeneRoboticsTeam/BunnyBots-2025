@@ -8,6 +8,8 @@ import yams.gearing.MechanismGearing
 // If you make more subsystems/constants objects, put them ABOVE this one
 // ElectronicIDs always goes on the bottom for quick access/readability
 object ElectronicIDs {
+    /* If you're looking for drivetrain IDs, they are in subsystems/drivetrain/SwerveConstants */
+
     const val WRIST_MOTOR_ID = 14
     const val INTAKE_MOTOR_ID = 15
     const val FLYWHEEL_MOTOR_TOP_ID = 17
@@ -21,6 +23,7 @@ object RobotConstants {
     val maxLength = Inches.of(21.4).plus(Inches.of(14.0))
 
     val mass = Kilograms.of(129.0)
+    val moi = KilogramSquareMeters.of(7.068515803)
 
     val targetVisionPose = Pose2d()
 }
@@ -34,31 +37,37 @@ object WristConstants {
 
     val length = Inches.of(15.1)
 
-    val hardMin = Rotations.of(-0.27) // TODO: Change
-    val hardMax = Rotations.of(0.254) // TODO: Change
+    // Found this in cad by picking a point on the end of the wrist that you decide to be parallel
+    // and then using arctan with the measurements on both the top and bottom positions
+    val hardMin = Degrees.of(-24.36)
+    val hardMax = Degrees.of(96.49)
 
     val gearing = MechanismGearing(
         GearBox.fromReductionStages(
             3.0,
             4.0,
-            54.0 / 22.0
+            56.0 / 24.0,
+            56.0 / 24.0
         )
     )
 
-    val stowPosition = Degrees.of(0.0)
-    val intakePosition = Degrees.of(0.0)
-    val cabbagePosition = Degrees.of(0.0)
+    // TODO: Test these values
+    val stowPosition = Degrees.of(96.0)
+    val intakePosition = Degrees.of(-22.87)
+    val cabbagePositionFirst = Degrees.of(35.4)
+    val cabbagePositionSecond = Degrees.of(52.94)
 }
 
 object IntakeConstants {
     val gearing = MechanismGearing(
         GearBox.fromReductionStages(
+            3.0,
             2.0
         )
     )
 
-    val intakeSpeed = 0.0 // TODO: Change
-    val reverseSpeed = 0.0 // TODO: Change
+    const val INTAKE_SPEED = 0.0 // TODO: Change
+    const val REVERSE_SPEED = 0.0 // TODO: Change
 }
 
 object FlywheelsConstants {
@@ -69,8 +78,7 @@ object FlywheelsConstants {
     const val V = 0.0
     const val A = 0.0
 
-    val mass = Kilograms.of(1.0)
-    val drumRadius = Inches.of(2.0)
+    val moi = KilogramSquareMeters.of(0.0006489431)
 
     val gearing = MechanismGearing(
         GearBox.fromReductionStages(
@@ -94,9 +102,10 @@ object IndexerConstants {
         )
     )
 
-    const val MAIN_DEFUALT = 0.0
+    const val MAIN_DEFAULT = 0.0
     const val KICKER_DEFAULT = 0.0
 
+    // TODO: Change
     const val MAIN_INDEXING = 0.3
     const val KICKER_INDEXING = -0.5
 

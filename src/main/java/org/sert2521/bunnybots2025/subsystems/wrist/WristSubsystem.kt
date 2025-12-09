@@ -14,6 +14,7 @@ import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.ScheduleCommand
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.RobotConstants
@@ -51,7 +52,7 @@ object WristSubsystem : SubsystemBase() {
 
     private val arm = Arm(armConfig)
 
-    private val stallDebouncer = Debouncer(0.2)
+    private val stallDebouncer = Debouncer(0.2, Debouncer.DebounceType.kRising)
 
     override fun periodic() {
         arm.updateTelemetry()
@@ -81,8 +82,12 @@ object WristSubsystem : SubsystemBase() {
         return setAngleCommand(WristConstants.intakePosition)
     }
 
-    fun toCabbage(): Command {
-        return setAngleCommand(WristConstants.cabbagePosition)
+    fun toCabbageFirst(): Command {
+        return setAngleCommand(WristConstants.cabbagePositionFirst)
+    }
+
+    fun toCabbageSecond(): Command {
+        return setAngleCommand(WristConstants.cabbagePositionSecond)
     }
 
     fun setPower(dutyCycle: Double) {
@@ -92,14 +97,20 @@ object WristSubsystem : SubsystemBase() {
     fun resetWristCommand(): Command {
         return runOnce {
             setPower(-0.3)
-        }.andThen(Commands.waitUntil {
-            stallDebouncer.calculate(arm.motor.statorCurrent > Amps.of(30.0))
-        }
+        }.andThen(
+            Commands.waitUntil {
+                stallDebouncer.calculate(arm.motor.statorCurrent > Amps.of(30.0))
+            }
         ).andThen(
             runOnce {
-                arm.motor.setEncoderPosition(Rotations.zero())
+                arm.motor.setEncoderPosition(WristConstants.hardMax)
+                stallDebouncer.calculate(false)
             }
-        )
+        ).finallyDo { interrupted ->
+            if (!interrupted) {
+                toStow().schedule()
+            }
+        }
     }
 
     fun sysId(): Command {

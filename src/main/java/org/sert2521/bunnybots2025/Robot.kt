@@ -5,6 +5,7 @@ import dev.doglog.DogLogOptions
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.TimedRobot
@@ -14,7 +15,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Commands
 import org.sert2521.bunnybots2025.subsystems.drivetrain.Drivetrain
 import org.sert2521.bunnybots2025.subsystems.flywheels.FlywheelsSubsystem
+import org.sert2521.bunnybots2025.subsystems.wrist.WristSubsystem
 import org.sert2521.bunnybots2025.util.SwerveControlUtil
+import kotlin.jvm.optionals.getOrElse
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -75,6 +78,14 @@ object Robot : TimedRobot() {
         if (!isReal()) {
             SwerveControlUtil.squarenessCommand(Input::getLeftX, Input::getLeftY).schedule()
         }
+
+        // This is so it starts at the right orientation, no redoing needed
+        if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red
+            && Input.rotationOffset === Rotation2d.kZero) {
+            Input.rotationOffset = Rotation2d.k180deg
+        }
+
+        WristSubsystem.resetWristCommand().schedule()
     }
 
     /** This method is called periodically during operator control.  */

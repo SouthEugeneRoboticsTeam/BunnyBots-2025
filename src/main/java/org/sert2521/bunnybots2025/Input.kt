@@ -26,30 +26,49 @@ object Input {
     private val driverRev = driverController.leftBumper()
     private val driverShoot = driverController.rightBumper()
     private val driverAlign = driverController.a()
+
     private val gunnerIntake = gunnerController.button(1)
     private val gunnerReverse = gunnerController.button(2)
     private val gunnerStow = gunnerController.button(4)
     private val gunnerRunIntake = gunnerController.button(10)
     private val gunnerLowerWrist = gunnerController.button(5)
+    private val gunnerResetWrist = gunnerController.button(99) // TODO: Set
 
     private val resetRotOffset = driverController.y()
 
-    private var rotationOffset = Rotation2d(0.0)
+    var rotationOffset = Rotation2d.kZero
 
     init {
         driverRev.onTrue(FlywheelsSubsystem.rev())
         driverRev.onFalse(FlywheelsSubsystem.stop())
+
         driverShoot.onTrue(IndexerSubsystem.kick())
+
         driverAlign.onTrue(VisionAlign(RobotConstants.targetVisionPose))
-        gunnerIntake.onTrue(WristSubsystem.toIntake()
-            .andThen(IntakeSubsystem.runIntake()))
-        gunnerIntake.onFalse(WristSubsystem.toStow()
-            .andThen(IntakeSubsystem.stop()))
+
+
+        gunnerIntake.onTrue(
+            WristSubsystem.toIntake()
+                .andThen(IntakeSubsystem.runIntake())
+        )
+        gunnerIntake.onFalse(
+            WristSubsystem.toStow()
+                .andThen(IntakeSubsystem.stop())
+        )
+
         gunnerReverse.whileTrue(IntakeSubsystem.runReverse())
-        gunnerStow.onTrue(WristSubsystem.toStow()
-            .andThen(IntakeSubsystem.stop()))
+
+        gunnerStow.onTrue(
+            WristSubsystem.toStow()
+                .andThen(IntakeSubsystem.stop())
+        )
+
         gunnerRunIntake.whileTrue(IntakeSubsystem.runIntake())
+
         gunnerLowerWrist.onTrue(WristSubsystem.toIntake())
+
+        gunnerResetWrist.onTrue(WristSubsystem.resetWristCommand())
+
 
         resetRotOffset.onTrue(Commands.runOnce({ rotationOffset = Drivetrain.getPose().rotation }))
     }
