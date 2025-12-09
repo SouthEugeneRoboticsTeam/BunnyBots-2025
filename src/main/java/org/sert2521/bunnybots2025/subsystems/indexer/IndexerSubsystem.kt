@@ -21,6 +21,7 @@ object IndexerSubsystem : SubsystemBase() {
         .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(false)
+        .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
 
     private val indexerSMC = SparkWrapper(indexerMotor, DCMotor.getNEO(1), indexerMotorConfig)
 
@@ -32,6 +33,7 @@ object IndexerSubsystem : SubsystemBase() {
         .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(false)
+        .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
 
     private val kickerSMC = SparkWrapper(kickerMotor, DCMotor.getNEO(1), kickerMotorConfig)
 

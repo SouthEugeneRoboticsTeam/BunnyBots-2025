@@ -21,6 +21,7 @@ object IntakeSubsystem : SubsystemBase() {
         .withStatorCurrentLimit(Amps.of(40.0))
         .withTelemetry("Intake Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withGearing(IntakeConstants.gearing)
+        .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
 
     private val intakeSMC = SparkWrapper(intakeMotor, DCMotor.getNEO(1), intakeMotorConfig)
 
