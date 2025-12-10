@@ -82,7 +82,16 @@ object IndexerSubsystem : SubsystemBase() {
             setIndexerMotor(IndexerConstants.MAIN_KICKING)
             setKickerMotor(IndexerConstants.KICKER_KICKING)
         }.andThen(
-            Commands.waitSeconds(IndexerConstants.KICK_TIME)
+            Commands.idle()
+        )
+    }
+
+    fun reverse():Command {
+        return runOnce {
+            setIndexerMotor(IndexerConstants.MAIN_REVERSE)
+            setKickerMotor(IndexerConstants.KICKER_REVERSE)
+        }.andThen(
+            Commands.idle()
         )
     }
 }

@@ -67,7 +67,8 @@ object WristSubsystem : SubsystemBase() {
     }
 
     private fun setAngleCommand(angle: Angle): Command {
-        return setAngleInstantCommand(angle).andThen(
+        return Commands.none()
+        setAngleInstantCommand(angle).andThen(
             Commands.waitUntil {
                 MathUtil.isNear(angle.`in`(Rotations), arm.angle.`in`(Rotations), 0.05)
             }
@@ -91,7 +92,7 @@ object WristSubsystem : SubsystemBase() {
     }
 
     fun setPower(dutyCycle: Double) {
-        arm.set(dutyCycle)
+        arm.set(0.0)
     }
 
     fun resetWristCommand(): Command {

@@ -66,7 +66,7 @@ object IntakeConstants {
         )
     )
 
-    const val INTAKE_SPEED = 0.0 // TODO: Change
+    const val INTAKE_SPEED = 0.5 // TODO: Change
     const val REVERSE_SPEED = 0.0 // TODO: Change
 }
 
@@ -109,8 +109,11 @@ object IndexerConstants {
     const val MAIN_INDEXING = 0.3
     const val KICKER_INDEXING = -0.5
 
-    const val MAIN_KICKING = 0.2
-    const val KICKER_KICKING = 0.5
+    const val MAIN_KICKING = 1.0
+    const val KICKER_KICKING = 0.7
     const val KICK_TIME = 0.2
+
+    const val MAIN_REVERSE = -0.2
+    const val KICKER_REVERSE = -0.2
 }
 

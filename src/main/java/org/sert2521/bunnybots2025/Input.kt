@@ -42,21 +42,31 @@ object Input {
         driverRev.onTrue(FlywheelsSubsystem.rev())
         driverRev.onFalse(FlywheelsSubsystem.stop())
 
-        driverShoot.onTrue(IndexerSubsystem.kick())
+        driverShoot.whileTrue(IndexerSubsystem.kick())
 
         driverAlign.onTrue(VisionAlign(RobotConstants.targetVisionPose))
 
 
         gunnerIntake.onTrue(
             WristSubsystem.toIntake()
-                .andThen(IntakeSubsystem.runIntake())
+                .andThen(
+                    IntakeSubsystem.runIntake()
+                        .alongWith(
+                            IndexerSubsystem.index()
+
+                        )
+                )
         )
         gunnerIntake.onFalse(
             WristSubsystem.toStow()
                 .andThen(IntakeSubsystem.stop())
         )
 
-        gunnerReverse.whileTrue(IntakeSubsystem.runReverse())
+        gunnerReverse.whileTrue(IntakeSubsystem.runReverse()
+            .alongWith(
+                IndexerSubsystem.reverse()
+            )
+        )
 
         gunnerStow.onTrue(
             WristSubsystem.toStow()
