@@ -1,11 +1,8 @@
 package org.sert2521.bunnybots2025.subsystems.drivetrain
 
-import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Distance
-import edu.wpi.first.units.measure.LinearVelocity
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 
@@ -23,6 +20,7 @@ object SwerveConstants {
         Translation2d(-Meters.of(0.288925), Meters.of(0.288925)),
         Translation2d(-Meters.of(0.288925), -Meters.of(0.288925))
     )
+    // TODO: Calibrate
     val moduleZeroRotations = arrayOf(
         Radians.of(0.0),
         Radians.of(0.0),
@@ -33,30 +31,37 @@ object SwerveConstants {
     val driveIDs = arrayOf(5, 6, 7, 8)
     val angleIDs = arrayOf(9, 10, 11, 12)
 
+    // TODO: Tune
     const val DRIVE_P = 0.0
     const val DRIVE_D = 0.0
     const val DRIVE_S = 0.0
     const val DRIVE_V = 0.0
     val driveCurrentLimit = Amps.of(0.0)
 
+    // TODO: Tune
     const val ANGLE_P = 0.0
     const val ANGLE_D = 0.0
     val angleCurrentLimit = Amps.of(0.0)
 
-    const val TRANSLATION_P = 0.0
-    const val TRANSLATION_I = 0.0
-    const val TRANSLATION_D = 0.0
+    // TODO: Tune
+    const val AUTO_TRANSLATION_P = 0.0 // 4.0
+    const val AUTO_TRANSLATION_I = 0.0
+    const val AUTO_TRANSLATION_D = 0.0 // 0.4
 
-    const val HEADING_P = 0.0
-    const val HEADING_I = 0.0
-    const val HEADING_D = 0.0
+    // TODO: Tune
+    const val AUTO_HEADING_P = 0.0 // 5.5
+    const val AUTO_HEADING_I = 0.0
+    const val AUTO_HEADING_D = 0.0 // 0.4
 
-    const val TRANSLATION_VISION_P = 0.0
-    const val TRANSLATION_VISION_D = 0.0
+    // TODO: Tune
+    const val VISION_TRANSLATION_P = 0.0 // 6.0
+    const val VISION_TRANSLATION_D = 0.0 // 0.4
 
-    const val HEADING_VISION_P = 0.0
-    const val HEADING_VISION_D = 0.0
+    // TODO: Tune
+    const val VISION_HEADING_P = 0.0 // 8.0
+    const val VISION_HEADING_D = 0.0 // 0.47
 
+    // TODO: Tune
     const val TRANSLATION_OUTPUT_MIN = 0.0
 
     val maxSpeed = MetersPerSecond.of(4.571)

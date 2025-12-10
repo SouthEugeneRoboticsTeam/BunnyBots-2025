@@ -9,7 +9,6 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController
 import com.pathplanner.lib.util.PathPlannerLogging
 import dev.doglog.DogLog
 import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.units.Units
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj2.command.Command
@@ -58,11 +57,15 @@ object Autos {
             Drivetrain::driveRobotRelative,
             PPHolonomicDriveController(
                 PIDConstants(
-                    SwerveConstants.TRANSLATION_P,
-                    SwerveConstants.TRANSLATION_I,
-                    SwerveConstants.TRANSLATION_D
+                    SwerveConstants.AUTO_TRANSLATION_P,
+                    SwerveConstants.AUTO_TRANSLATION_I,
+                    SwerveConstants.AUTO_TRANSLATION_D
                 ),
-                PIDConstants(SwerveConstants.HEADING_P, SwerveConstants.HEADING_I, SwerveConstants.HEADING_D)
+                PIDConstants(
+                    SwerveConstants.AUTO_HEADING_P,
+                    SwerveConstants.AUTO_HEADING_I,
+                    SwerveConstants.AUTO_HEADING_D
+                )
             ),
             RobotConfig(
                 RobotConstants.mass,
