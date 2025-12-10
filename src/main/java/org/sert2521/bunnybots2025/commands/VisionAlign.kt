@@ -12,9 +12,9 @@ import org.sert2521.bunnybots2025.subsystems.drivetrain.SwerveConstants
 class VisionAlign(private val target: Pose2d) : Command() {
     private var poseError = Pose2d.kZero
     private val translationPID =
-        PIDController(SwerveConstants.TRANSLATION_VISION_P, 0.0, SwerveConstants.TRANSLATION_VISION_D)
-    private val rotationPID = PIDController(SwerveConstants.HEADING_VISION_P, 0.0, SwerveConstants.HEADING_VISION_D)
-    private val alignDebouncer = Debouncer(0.3, Debouncer.DebounceType.kRising)
+        PIDController(SwerveConstants.VISION_TRANSLATION_P, 0.0, SwerveConstants.VISION_TRANSLATION_D)
+    private val rotationPID = PIDController(SwerveConstants.VISION_HEADING_P, 0.0, SwerveConstants.VISION_HEADING_D)
+    private val alignDebouncer = Debouncer(0.5, Debouncer.DebounceType.kRising)
     private val rumbleBlip = Input.rumbleBlip()
     private var rumbled = false
 
