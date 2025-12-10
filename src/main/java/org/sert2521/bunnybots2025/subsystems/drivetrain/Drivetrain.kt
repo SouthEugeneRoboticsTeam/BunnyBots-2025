@@ -1,5 +1,8 @@
 package org.sert2521.bunnybots2025.subsystems.drivetrain
 
+import com.ctre.phoenix6.configs.MountPoseConfigs
+import com.ctre.phoenix6.configs.Pigeon2Configuration
+import com.ctre.phoenix6.configs.Pigeon2FeaturesConfigs
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.hardware.Pigeon2
 import com.revrobotics.spark.SparkLowLevel
@@ -63,6 +66,7 @@ object Drivetrain : SubsystemBase() {
             .withFeedforward(SimpleMotorFeedforward(DRIVE_S, DRIVE_V))
             .withClosedLoopController(DRIVE_P, 0.0, DRIVE_D)
             .withGearing(driveGearing)
+            .withMotorInverted(true)
             .withStatorCurrentLimit(driveCurrentLimit)
             .withMomentOfInertia(0.0005267514) // Use the formula MR^2/2
             .withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
@@ -71,6 +75,7 @@ object Drivetrain : SubsystemBase() {
             .withClosedLoopController(ANGLE_P, 0.0, ANGLE_D)
             .withContinuousWrapping(Radians.of(-PI), Radians.of(PI))
             .withGearing(angleGearing)
+            .withMotorInverted(true)
             .withStatorCurrentLimit(angleCurrentLimit)
             .withMomentOfInertia(0.0003195625) // Use the formula MR^2/4 + ML^2/12
             .withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
@@ -81,15 +86,12 @@ object Drivetrain : SubsystemBase() {
         val moduleConfig = SwerveModuleConfig(driveSMC, angleSMC)
             .withAbsoluteEncoderOffset(rotationZero)
             .withAbsoluteEncoder(
-                if (RobotBase.isReal()) {
-                    absoluteEncoder.absolutePosition.asSupplier()
-                } else {
-                    { angleSMC.mechanismPosition }
-                }
+                absoluteEncoder.position.asSupplier()
             )
             .withTelemetry(moduleName, SmartMotorControllerConfig.TelemetryVerbosity.LOW)
             .withLocation(location)
             .withOptimization(true)
+            .withCosineCompensation(false)
 
         return SwerveModule(moduleConfig)
     }
@@ -105,6 +107,10 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
+
+    private val gyroConfig = Pigeon2Configuration()
+        .withMountPose(MountPoseConfigs().withMountPosePitch(Degrees.of(90.0)))
+        .withPigeon2Features(Pigeon2FeaturesConfigs().withEnableCompass(false))
     private val gyro = Pigeon2(13)
     private val gyroYaw = gyro.yaw.asSupplier()
 
@@ -137,11 +143,15 @@ object Drivetrain : SubsystemBase() {
 
     init {
         SmartDashboard.putData(field)
+        gyro.configurator.apply(gyroConfig)
 
         defaultCommand = JoystickDrive(true)
     }
 
     override fun periodic() {
+        modules.forEach { it.updateTelemetry() }
+        modules.forEach { it.seedAzimuthEncoder() }
+
         field.robotPose = poseEstimator.estimatedPosition
 
         val currentGyroConnected = gyroConnected.calculate(gyro.isConnected)
@@ -160,6 +170,8 @@ object Drivetrain : SubsystemBase() {
             "Drivetrain/ChassisSpeeds/Measured Drive Speed",
             hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
         )
+
+        DogLog.log("Drivetrain/Rotation", poseEstimator.estimatedPosition.rotation)
 
         if (DriverStation.isDisabled()) {
             DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
@@ -250,6 +262,10 @@ object Drivetrain : SubsystemBase() {
 
     fun setPose(pose: Pose2d) {
         poseEstimator.resetPose(pose)
+    }
+
+    fun setRotation(rotation: Rotation2d){
+        poseEstimator.resetRotation(rotation)
     }
 
     fun getVisionPose(): Optional<Pose2d> {

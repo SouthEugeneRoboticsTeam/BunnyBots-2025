@@ -57,6 +57,8 @@ object WristConstants {
     val intakePosition = Degrees.of(-22.87)
     val cabbagePositionFirst = Degrees.of(35.4)
     val cabbagePositionSecond = Degrees.of(52.94)
+
+    const val RESET_DUTY_CYCLE = -0.3
 }
 
 object IntakeConstants {
@@ -68,7 +70,7 @@ object IntakeConstants {
     )
 
     const val INTAKE_SPEED = 0.5 // TODO: Change
-    const val REVERSE_SPEED = 0.0 // TODO: Change
+    const val REVERSE_SPEED = -0.3 // TODO: Change
 }
 
 object FlywheelsConstants {
@@ -77,7 +79,7 @@ object FlywheelsConstants {
     const val D = 0.0
 
     const val S = 0.0
-    const val V = 0.0
+    const val V = 0.255
     const val A = 0.0
 
     val moi = KilogramSquareMeters.of(0.0006489431)
@@ -88,8 +90,8 @@ object FlywheelsConstants {
         )
     )
 
-    val topShootTarget = RPM.of(1000.0) // TODO: Change
-    val bottomShootTarget = RPM.of(1000.0) // TODO: Change
+    val topShootTarget = RPM.of(2000.0) // TODO: Change
+    val bottomShootTarget = RPM.of(2000.0) // TODO: Change
 }
 
 object IndexerConstants {

@@ -20,12 +20,11 @@ object SwerveConstants {
         Translation2d(-Meters.of(0.288925), Meters.of(0.288925)),
         Translation2d(-Meters.of(0.288925), -Meters.of(0.288925))
     )
-    // TODO: Calibrate
     val moduleZeroRotations = arrayOf(
-        Radians.of(0.0),
-        Radians.of(0.0),
-        Radians.of(0.0),
-        Radians.of(0.0)
+        Rotations.of(0.08056640624999999),//-0.44222405552864075), // FL
+        Rotations.of(0.272705078125),//0.15999986231327054), // FR
+        Rotations.of(-0.88427734375),// 0.0022221936378628016), // BL
+        Rotations.of(0.681884765625)// -0.567780077457428) // BR
     )
     val encoderIDs = arrayOf(1, 2, 3, 4)
     val driveIDs = arrayOf(5, 6, 7, 8)
@@ -35,13 +34,13 @@ object SwerveConstants {
     const val DRIVE_P = 0.0
     const val DRIVE_D = 0.0
     const val DRIVE_S = 0.0
-    const val DRIVE_V = 0.0
-    val driveCurrentLimit = Amps.of(0.0)
+    const val DRIVE_V = 0.85
+    val driveCurrentLimit = Amps.of(40.0)
 
     // TODO: Tune
-    const val ANGLE_P = 0.0
-    const val ANGLE_D = 0.0
-    val angleCurrentLimit = Amps.of(0.0)
+    const val ANGLE_P = 45.0
+    const val ANGLE_D = 1.0
+    val angleCurrentLimit = Amps.of(40.0)
 
     // TODO: Tune
     const val AUTO_TRANSLATION_P = 0.0 // 4.0
@@ -72,7 +71,7 @@ object SwerveConstants {
 object DriveConfig {
     const val DRIVE_SPEED = 1.0
 
-    const val ROT_SPEED = 1.0
+    const val ROT_SPEED = 2.0
 
     const val DRIVE_ACCELERATION = 0.0
 }

@@ -45,6 +45,7 @@ object Robot : TimedRobot() {
         )
         Drivetrain
         Input
+        WristSubsystem
         FlywheelsSubsystem
     }
 
@@ -87,6 +88,7 @@ object Robot : TimedRobot() {
 
         WristSubsystem.resetWristCommand().schedule()
     }
+
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {

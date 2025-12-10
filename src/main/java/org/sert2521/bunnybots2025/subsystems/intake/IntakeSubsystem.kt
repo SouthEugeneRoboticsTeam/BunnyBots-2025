@@ -27,6 +27,7 @@ object IntakeSubsystem : SubsystemBase() {
 
     init {
         defaultCommand = stop()
+        // Setup Telemetry
     }
 
     override fun periodic() {

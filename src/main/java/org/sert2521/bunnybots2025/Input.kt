@@ -1,13 +1,10 @@
 package org.sert2521.bunnybots2025
 
-import dev.doglog.DogLog
-import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.bunnybots2025.commands.VisionAlign
@@ -16,8 +13,8 @@ import org.sert2521.bunnybots2025.subsystems.flywheels.FlywheelsSubsystem
 import org.sert2521.bunnybots2025.subsystems.indexer.IndexerSubsystem
 import org.sert2521.bunnybots2025.subsystems.intake.IntakeSubsystem
 import org.sert2521.bunnybots2025.subsystems.wrist.WristSubsystem
-import yams.motorcontrollers.SmartMotorController
-import yams.motorcontrollers.SmartMotorControllerConfig
+import kotlin.jvm.optionals.getOrElse
+import kotlin.math.pow
 
 object Input {
     private val driverController = CommandXboxController(0)
@@ -39,7 +36,7 @@ object Input {
     var rotationOffset = Rotation2d.kZero
 
     init {
-        driverRev.onTrue(FlywheelsSubsystem.rev())
+        driverRev.whileTrue(FlywheelsSubsystem.rev())
         driverRev.onFalse(FlywheelsSubsystem.stop())
 
         driverShoot.whileTrue(IndexerSubsystem.kick())
@@ -80,7 +77,15 @@ object Input {
         gunnerResetWrist.onTrue(WristSubsystem.resetWristCommand())
 
 
-        resetRotOffset.onTrue(Commands.runOnce({ rotationOffset = Drivetrain.getPose().rotation }))
+        resetRotOffset.onTrue(Commands.runOnce({
+            if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {
+                Drivetrain.setRotation(Rotation2d.k180deg)
+                rotationOffset = Rotation2d.k180deg
+            } else {
+                Drivetrain.setRotation(Rotation2d.kZero)
+                rotationOffset = Rotation2d.kZero
+            }
+        }))
     }
 
 
@@ -94,15 +99,15 @@ object Input {
     }
 
     fun getLeftX(): Double {
-        return -driverController.leftX
+        return -driverController.leftX.pow(3)
     }
 
     fun getLeftY(): Double {
-        return -driverController.leftY
+        return -driverController.leftY.pow(3)
     }
 
     fun getRightX(): Double {
-        return -driverController.rightX
+        return -driverController.rightX.pow(3)
     }
 
     fun getRotOffset(): Rotation2d {

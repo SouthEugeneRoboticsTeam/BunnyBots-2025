@@ -24,6 +24,7 @@ object FlywheelsSubsystem : SubsystemBase() {
 
     private val motorConfigTop = SmartMotorControllerConfig(this)
         .withClosedLoopController(FlywheelsConstants.P, 0.0, FlywheelsConstants.D)
+        .withFeedforward(SimpleMotorFeedforward(FlywheelsConstants.S, FlywheelsConstants.V, FlywheelsConstants.A))
         .withGearing(FlywheelsConstants.gearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Flywheel Motor Top", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
@@ -49,6 +50,8 @@ object FlywheelsSubsystem : SubsystemBase() {
     override fun periodic() {
         topSMC.updateTelemetry()
         bottomSMC.updateTelemetry()
+        DogLog.log("Top Flywheel Speed", topSMC.mechanismVelocity.`in`(RPM))
+        DogLog.log("Bottom Flywheel Speed", bottomSMC.mechanismVelocity.`in`(RPM))
     }
 
     override fun simulationPeriodic() {
@@ -58,13 +61,12 @@ object FlywheelsSubsystem : SubsystemBase() {
 
     private fun setVelocitiesCommand(velocityTop: AngularVelocity, velocityBottom: AngularVelocity): Command {
         return runOnce {
+            topSMC.startClosedLoopController()
+            bottomSMC.startClosedLoopController()
             topSMC.setVelocity(velocityTop)
             bottomSMC.setVelocity(velocityBottom)
         }.andThen(
-            Commands.waitUntil {
-                MathUtil.isNear(velocityTop.`in`(RPM), topSMC.mechanismVelocity.`in`(RPM), 10.0)
-                        && MathUtil.isNear(velocityBottom.`in`(RPM), bottomSMC.mechanismVelocity.`in`(RPM), 10.0)
-            }
+            Commands.idle()
         )
     }
 
@@ -74,8 +76,12 @@ object FlywheelsSubsystem : SubsystemBase() {
 
     fun stop(): Command {
         return runOnce {
+            topSMC.stopClosedLoopController()
+            bottomSMC.stopClosedLoopController()
             topSMC.dutyCycle = 0.0
             bottomSMC.dutyCycle = 0.0
-        }
+        }.andThen(
+            Commands.idle()
+        )
     }
 }

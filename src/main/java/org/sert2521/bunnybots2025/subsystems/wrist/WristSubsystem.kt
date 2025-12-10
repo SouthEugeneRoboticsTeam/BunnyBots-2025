@@ -2,6 +2,7 @@ package org.sert2521.bunnybots2025.subsystems.wrist
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import dev.doglog.DogLog
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.system.plant.DCMotor
@@ -67,8 +68,7 @@ object WristSubsystem : SubsystemBase() {
     }
 
     private fun setAngleCommand(angle: Angle): Command {
-        return Commands.none()
-        setAngleInstantCommand(angle).andThen(
+        return setAngleInstantCommand(angle).andThen(
             Commands.waitUntil {
                 MathUtil.isNear(angle.`in`(Rotations), arm.angle.`in`(Rotations), 0.05)
             }
@@ -92,12 +92,15 @@ object WristSubsystem : SubsystemBase() {
     }
 
     fun setPower(dutyCycle: Double) {
-        arm.set(0.0)
+        arm.set(dutyCycle)
     }
 
     fun resetWristCommand(): Command {
         return runOnce {
-            setPower(-0.3)
+            DogLog.log("RAN", true)
+            stallDebouncer.calculate(false)
+            arm.motor.stopClosedLoopController()
+            setPower(WristConstants.RESET_DUTY_CYCLE)
         }.andThen(
             Commands.waitUntil {
                 stallDebouncer.calculate(arm.motor.statorCurrent > Amps.of(30.0))
@@ -111,6 +114,7 @@ object WristSubsystem : SubsystemBase() {
             if (!interrupted) {
                 toStow().schedule()
             }
+            arm.motor.startClosedLoopController()
         }
     }
 
