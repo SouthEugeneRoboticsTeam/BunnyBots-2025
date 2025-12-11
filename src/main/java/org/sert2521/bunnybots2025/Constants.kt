@@ -34,7 +34,7 @@ object WristConstants {
     const val I = 0.0
     const val D = 0.0
 
-    val moi = KilogramSquareMeters.of(0.346) // TODO: Double check
+    val moi = KilogramSquareMeters.of(0.346)
 
     val length = Inches.of(15.1)
 
@@ -69,12 +69,11 @@ object IntakeConstants {
         )
     )
 
-    const val INTAKE_SPEED = 0.5 // TODO: Change
-    const val REVERSE_SPEED = -0.3 // TODO: Change
+    const val INTAKE_SPEED = 0.5
+    const val REVERSE_SPEED = -0.3
 }
 
 object FlywheelsConstants {
-    // TODO: Tune
     const val P = 0.0
     const val D = 0.0
 
@@ -109,7 +108,6 @@ object IndexerConstants {
     const val MAIN_DEFAULT = 0.0
     const val KICKER_DEFAULT = 0.0
 
-    // TODO: Change
     const val MAIN_INDEXING = 0.3
     const val KICKER_INDEXING = -0.5
 

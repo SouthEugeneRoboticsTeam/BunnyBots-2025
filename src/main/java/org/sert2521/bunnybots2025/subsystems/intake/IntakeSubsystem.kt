@@ -3,6 +3,7 @@ package org.sert2521.bunnybots2025.subsystems.intake
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
@@ -28,6 +29,12 @@ object IntakeSubsystem : SubsystemBase() {
     init {
         defaultCommand = stop()
         // Setup Telemetry
+        intakeSMC.setupTelemetry(
+            NetworkTableInstance.getDefault().getTable("Tuning")
+                .getSubTable("Intake"),
+            NetworkTableInstance.getDefault().getTable("Mechanisms")
+                .getSubTable("Intake")
+        )
     }
 
     override fun periodic() {

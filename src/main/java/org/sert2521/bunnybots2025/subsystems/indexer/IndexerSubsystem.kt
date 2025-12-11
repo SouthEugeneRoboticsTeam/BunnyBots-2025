@@ -3,6 +3,7 @@ package org.sert2521.bunnybots2025.subsystems.indexer
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
@@ -11,6 +12,7 @@ import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.IndexerConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
+import yams.telemetry.MechanismTelemetry
 
 object IndexerSubsystem : SubsystemBase() {
     private val indexerMotor = SparkMax(ElectronicIDs.INDEXER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
@@ -37,8 +39,23 @@ object IndexerSubsystem : SubsystemBase() {
 
     private val kickerSMC = SparkWrapper(kickerMotor, DCMotor.getNEO(1), kickerMotorConfig)
 
+    private val telemetry = MechanismTelemetry()
+
     init {
         defaultCommand = default()
+
+        indexerSMC.setupTelemetry(
+            NetworkTableInstance.getDefault().getTable("Tuning")
+                .getSubTable("Indexer"),
+            NetworkTableInstance.getDefault().getTable("Mechanisms")
+                .getSubTable("Indexer")
+        )
+        kickerSMC.setupTelemetry(
+            NetworkTableInstance.getDefault().getTable("Tuning")
+                .getSubTable("Indexer"),
+            NetworkTableInstance.getDefault().getTable("Mechanisms")
+                .getSubTable("Indexer")
+        )
     }
 
     override fun periodic() {

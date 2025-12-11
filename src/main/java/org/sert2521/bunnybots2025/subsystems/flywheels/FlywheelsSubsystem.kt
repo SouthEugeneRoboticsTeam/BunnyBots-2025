@@ -6,6 +6,7 @@ import dev.doglog.DogLog
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.wpilibj2.command.Command
@@ -13,9 +14,10 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.bunnybots2025.ElectronicIDs
 import org.sert2521.bunnybots2025.FlywheelsConstants
-import yams.math.ExponentialProfilePIDController
+import org.sert2521.bunnybots2025.subsystems.indexer.IndexerSubsystem
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
+import java.util.function.Supplier
 
 object FlywheelsSubsystem : SubsystemBase() {
     private val motorTop = SparkMax(ElectronicIDs.FLYWHEEL_MOTOR_TOP_ID, SparkLowLevel.MotorType.kBrushless)
@@ -43,8 +45,24 @@ object FlywheelsSubsystem : SubsystemBase() {
     private val topSMC = SparkWrapper(motorTop, DCMotor.getNEO(1), motorConfigTop)
     private val bottomSMC = SparkWrapper(motorBottom, DCMotor.getNEO(1), motorConfigBottom)
 
+    private var topLastSetpoint = RPM.zero()
+    private var bottomLastSetpoint = RPM.zero()
+
     init {
-        defaultCommand = stop()
+        defaultCommand = holdCommand(::topLastSetpoint, ::bottomLastSetpoint)
+
+        topSMC.setupTelemetry(
+            NetworkTableInstance.getDefault().getTable("Tuning")
+                .getSubTable("Flywheels"),
+            NetworkTableInstance.getDefault().getTable("Mechanisms")
+                .getSubTable("Flywheels")
+        )
+        bottomSMC.setupTelemetry(
+            NetworkTableInstance.getDefault().getTable("Tuning")
+                .getSubTable("Flywheels"),
+            NetworkTableInstance.getDefault().getTable("Mechanisms")
+                .getSubTable("Flywheels")
+        )
     }
 
     override fun periodic() {
@@ -61,10 +79,23 @@ object FlywheelsSubsystem : SubsystemBase() {
 
     private fun setVelocitiesCommand(velocityTop: AngularVelocity, velocityBottom: AngularVelocity): Command {
         return runOnce {
-            topSMC.startClosedLoopController()
-            bottomSMC.startClosedLoopController()
             topSMC.setVelocity(velocityTop)
             bottomSMC.setVelocity(velocityBottom)
+            topLastSetpoint = velocityTop
+            bottomLastSetpoint = velocityBottom
+        }.until {
+            MathUtil.isNear(velocityTop.`in`(RPM), topSMC.mechanismVelocity.`in`(RPM), 10.0)
+                    && MathUtil.isNear(velocityBottom.`in`(RPM), bottomSMC.mechanismVelocity.`in`(RPM), 10.0)
+        }
+    }
+
+    private fun holdCommand(velocityTop: Supplier<AngularVelocity>,
+                            velocityBottom: Supplier<AngularVelocity>):Command{
+        return runOnce{
+            topSMC.setVelocity(velocityTop.get())
+            bottomSMC.setVelocity(velocityBottom.get())
+//            topLastSetpoint = velocityTop.get()
+//            bottomLastSetpoint = velocityBottom.get()
         }.andThen(
             Commands.idle()
         )
@@ -75,13 +106,6 @@ object FlywheelsSubsystem : SubsystemBase() {
     }
 
     fun stop(): Command {
-        return runOnce {
-            topSMC.stopClosedLoopController()
-            bottomSMC.stopClosedLoopController()
-            topSMC.dutyCycle = 0.0
-            bottomSMC.dutyCycle = 0.0
-        }.andThen(
-            Commands.idle()
-        )
+        return setVelocitiesCommand(RPM.zero(), RPM.zero())
     }
 }

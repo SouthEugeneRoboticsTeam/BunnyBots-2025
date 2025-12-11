@@ -55,6 +55,12 @@ object WristSubsystem : SubsystemBase() {
 
     private val stallDebouncer = Debouncer(0.2, Debouncer.DebounceType.kRising)
 
+    private var lastSetpoint = WristConstants.stowPosition
+
+    init {
+        defaultCommand = arm.setAngle(::lastSetpoint)
+    }
+
     override fun periodic() {
         arm.updateTelemetry()
     }
@@ -63,16 +69,10 @@ object WristSubsystem : SubsystemBase() {
         arm.simIterate()
     }
 
-    private fun setAngleInstantCommand(angle: Angle): Command {
-        return arm.setAngle(angle)
-    }
-
     private fun setAngleCommand(angle: Angle): Command {
-        return setAngleInstantCommand(angle).andThen(
-            Commands.waitUntil {
-                MathUtil.isNear(angle.`in`(Rotations), arm.angle.`in`(Rotations), 0.05)
-            }
-        )
+        return arm.setAngle(angle).until {
+            MathUtil.isNear(angle.`in`(Rotations), arm.angle.`in`(Rotations), 0.05)
+        }
     }
 
     fun toStow(): Command {
@@ -91,31 +91,21 @@ object WristSubsystem : SubsystemBase() {
         return setAngleCommand(WristConstants.cabbagePositionSecond)
     }
 
-    fun setPower(dutyCycle: Double) {
-        arm.set(dutyCycle)
-    }
-
     fun resetWristCommand(): Command {
-        return runOnce {
-            DogLog.log("RAN", true)
-            stallDebouncer.calculate(false)
-            arm.motor.stopClosedLoopController()
-            setPower(WristConstants.RESET_DUTY_CYCLE)
-        }.andThen(
-            Commands.waitUntil {
+        return arm.set(WristConstants.RESET_DUTY_CYCLE)
+            .until{
                 stallDebouncer.calculate(arm.motor.statorCurrent > Amps.of(30.0))
+            }.andThen(
+                runOnce {
+                    arm.motor.setEncoderPosition(WristConstants.hardMax)
+                    stallDebouncer.calculate(false)
+                }
+            ).finallyDo { interrupted ->
+                if (!interrupted) {
+                    toStow().schedule()
+                }
+                arm.motor.startClosedLoopController()
             }
-        ).andThen(
-            runOnce {
-                arm.motor.setEncoderPosition(WristConstants.hardMax)
-                stallDebouncer.calculate(false)
-            }
-        ).finallyDo { interrupted ->
-            if (!interrupted) {
-                toStow().schedule()
-            }
-            arm.motor.startClosedLoopController()
-        }
     }
 
     fun sysId(): Command {
