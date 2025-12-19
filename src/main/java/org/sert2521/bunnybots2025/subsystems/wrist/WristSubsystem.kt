@@ -58,7 +58,7 @@ object WristSubsystem : SubsystemBase() {
     private var lastSetpoint = WristConstants.stowPosition
 
     init {
-        defaultCommand = arm.setAngle(::lastSetpoint)
+        // defaultCommand = arm.setAngle(::lastSetpoint)
     }
 
     override fun periodic() {

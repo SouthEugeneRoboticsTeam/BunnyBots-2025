@@ -2,6 +2,9 @@ package org.sert2521.bunnybots2025
 
 import dev.doglog.DogLog
 import dev.doglog.DogLogOptions
+import edu.wpi.first.cameraserver.CameraServer
+import edu.wpi.first.cscore.UsbCamera
+import edu.wpi.first.hal.DriverStationJNI
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
@@ -47,6 +50,8 @@ object Robot : TimedRobot() {
         Input
         WristSubsystem
         FlywheelsSubsystem
+
+        CameraServer.startAutomaticCapture()
     }
 
 
@@ -65,8 +70,8 @@ object Robot : TimedRobot() {
     override fun autonomousInit() {
         Drivetrain.startDrivePID()
 
-        autonomousCommand = Autos.getAutonomousCommand()
-        autonomousCommand.schedule()
+        // autonomousCommand = Autos.getAutonomousCommand()
+        // autonomousCommand.schedule()
     }
 
     override fun autonomousPeriodic() {

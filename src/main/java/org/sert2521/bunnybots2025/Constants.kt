@@ -29,8 +29,7 @@ object RobotConstants {
 }
 
 object WristConstants {
-    // TODO: Tune
-    const val P = 0.0
+    const val P = 54.0
     const val I = 0.0
     const val D = 0.0
 
@@ -52,13 +51,12 @@ object WristConstants {
         )
     )
 
-    // TODO: Test these values
     val stowPosition = Degrees.of(96.0)
-    val intakePosition = Degrees.of(-22.87)
+    val intakePosition = Rotations.of(-0.09)
     val cabbagePositionFirst = Degrees.of(35.4)
     val cabbagePositionSecond = Degrees.of(52.94)
 
-    const val RESET_DUTY_CYCLE = -0.3
+    const val RESET_DUTY_CYCLE = 0.1
 }
 
 object IntakeConstants {
@@ -89,8 +87,8 @@ object FlywheelsConstants {
         )
     )
 
-    val topShootTarget = RPM.of(2000.0) // TODO: Change
-    val bottomShootTarget = RPM.of(2000.0) // TODO: Change
+    val topShootTarget = RPM.of(2460.0)
+    val bottomShootTarget = RPM.of(890.0)
 }
 
 object IndexerConstants {
@@ -112,7 +110,7 @@ object IndexerConstants {
     const val KICKER_INDEXING = -0.5
 
     const val MAIN_KICKING = 1.0
-    const val KICKER_KICKING = 0.7
+    const val KICKER_KICKING = 1.0
     const val KICK_TIME = 0.2
 
     const val MAIN_REVERSE = -0.2

@@ -25,11 +25,13 @@ object Input {
     private val driverAlign = driverController.a()
 
     private val gunnerIntake = gunnerController.button(1)
-    private val gunnerReverse = gunnerController.button(2)
-    private val gunnerStow = gunnerController.button(4)
-    private val gunnerRunIntake = gunnerController.button(10)
-    private val gunnerLowerWrist = gunnerController.button(5)
-    private val gunnerResetWrist = gunnerController.button(99) // TODO: Set
+    private val gunnerIndex = gunnerController.button(2)
+    private val gunnerReverseIndex = gunnerController.button(3)
+    private val gunnerReverseIntake = gunnerController.button(4)
+    private val gunnerSpit = gunnerController.povCenter()
+    private val gunnerStow = gunnerController.button(5)
+    private val gunnerLowerWrist = gunnerController.button(10)
+    private val gunnerResetWrist = gunnerController.button(6) // TODO: Set
 
     private val resetRotOffset = driverController.y()
 
@@ -39,30 +41,36 @@ object Input {
         driverRev.whileTrue(FlywheelsSubsystem.rev())
         driverRev.onFalse(FlywheelsSubsystem.stop())
 
-        driverShoot.whileTrue(IndexerSubsystem.kick())
+        driverShoot.whileTrue(FlywheelsSubsystem.rev()
+            .alongWith(
+                Commands.waitSeconds(0.35)
+                    .andThen(IndexerSubsystem.kick())
+            )
+        )
+
+        driverShoot.onFalse(FlywheelsSubsystem.stop())
 
         driverAlign.onTrue(VisionAlign(RobotConstants.targetVisionPose))
 
 
-        gunnerIntake.onTrue(
-            WristSubsystem.toIntake()
-                .andThen(
-                    IntakeSubsystem.runIntake()
-                        .alongWith(
-                            IndexerSubsystem.index()
+        gunnerIntake.whileTrue(
+            IntakeSubsystem.runIntake()
+        )
 
+        gunnerIndex.whileTrue(IndexerSubsystem.index())
+
+        gunnerReverseIndex.whileTrue(IndexerSubsystem.reverse())
+
+        gunnerReverseIntake.whileTrue(IntakeSubsystem.runReverse())
+
+        gunnerSpit.whileFalse(
+            WristSubsystem.toStow()
+                .andThen(
+                    IntakeSubsystem.runReverse()
+                        .alongWith(
+                            IndexerSubsystem.reverse()
                         )
                 )
-        )
-        gunnerIntake.onFalse(
-            WristSubsystem.toStow()
-                .andThen(IntakeSubsystem.stop())
-        )
-
-        gunnerReverse.whileTrue(IntakeSubsystem.runReverse()
-            .alongWith(
-                IndexerSubsystem.reverse()
-            )
         )
 
         gunnerStow.onTrue(
@@ -70,7 +78,6 @@ object Input {
                 .andThen(IntakeSubsystem.stop())
         )
 
-        gunnerRunIntake.whileTrue(IntakeSubsystem.runIntake())
 
         gunnerLowerWrist.onTrue(WristSubsystem.toIntake())
 

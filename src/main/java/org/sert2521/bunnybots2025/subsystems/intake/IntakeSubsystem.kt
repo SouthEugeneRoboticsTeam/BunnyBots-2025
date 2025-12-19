@@ -46,11 +46,9 @@ object IntakeSubsystem : SubsystemBase() {
     }
 
     fun runIntake(): Command {
-        return runOnce {
+        return run {
             setMotor(IntakeConstants.INTAKE_SPEED)
-        }.andThen(
-            Commands.idle()
-        )
+        }
     }
 
     fun runReverse(): Command {

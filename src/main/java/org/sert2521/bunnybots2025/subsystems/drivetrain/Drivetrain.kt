@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import limelight.Limelight
 import org.sert2521.bunnybots2025.commands.JoystickDrive
@@ -124,16 +125,7 @@ object Drivetrain : SubsystemBase() {
         Pose2d.kZero
     )
 
-    private val visionPoseEstimator = SwerveDrivePoseEstimator(
-        kinematics,
-        Rotation2d.kZero,
-        Array(4) { modules[it].position },
-        Pose2d.kZero
-    )
-
     private var simGyroAngle = Rotation.zero()
-
-    private val limelight = Limelight("limelight")
 
     private val field = Field2d()
 
@@ -268,35 +260,35 @@ object Drivetrain : SubsystemBase() {
         poseEstimator.resetRotation(rotation)
     }
 
-    fun getVisionPose(): Optional<Pose2d> {
-        if (!limelight.latestResults.isPresent) {
-            return Optional.empty()
-        }
-        if (!limelight.latestResults.get().valid) {
-            return Optional.empty()
-        }
-
-        // Finding the biggest tag in view of the limelight, chooses that one for vision align
-        var biggestTag = 0
-        val latestResults = limelight.latestResults.get().targets_Fiducials
-        for (i in latestResults.indices) {
-            if (latestResults[i].ta > latestResults[biggestTag].ta) {
-                biggestTag = i
-            }
-        }
-
-        return Optional.of(latestResults[biggestTag].robotPose_TargetSpace2D)
-    }
-
-    fun getVisionPoseToTarget(target: Pose2d): Pose2d {
-        val visionPose = getVisionPose()
-
-        return if (visionPose.isPresent) {
-            target.relativeTo(visionPose.get())
-        } else {
-            Pose2d.kZero
-        }
-    }
+//    fun getVisionPose(): Optional<Pose2d> {
+//        if (!limelight.latestResults.isPresent) {
+//            return Optional.empty()
+//        }
+//        if (!limelight.latestResults.get().valid) {
+//            return Optional.empty()
+//        }
+//
+//        // Finding the biggest tag in view of the limelight, chooses that one for vision align
+//        var biggestTag = 0
+//        val latestResults = limelight.latestResults.get().targets_Fiducials
+//        for (i in latestResults.indices) {
+//            if (latestResults[i].ta > latestResults[biggestTag].ta) {
+//                biggestTag = i
+//            }
+//        }
+//
+//        return Optional.of(latestResults[biggestTag].robotPose_TargetSpace2D)
+//    }
+//
+//    fun getVisionPoseToTarget(target: Pose2d): Pose2d {
+//        val visionPose = getVisionPose()
+//
+//        return if (visionPose.isPresent) {
+//            target.relativeTo(visionPose.get())
+//        } else {
+//            Pose2d.kZero
+//        }
+//    }
 
     fun runFFCharacterization(output: Double): Double {
         modules.forEach {

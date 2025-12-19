@@ -43,14 +43,14 @@ object SwerveConstants {
     val angleCurrentLimit = Amps.of(40.0)
 
     // TODO: Tune
-    const val AUTO_TRANSLATION_P = 0.0 // 4.0
+    const val AUTO_TRANSLATION_P = 4.0 // 4.0
     const val AUTO_TRANSLATION_I = 0.0
-    const val AUTO_TRANSLATION_D = 0.0 // 0.4
+    const val AUTO_TRANSLATION_D = 0.4 // 0.4
 
     // TODO: Tune
-    const val AUTO_HEADING_P = 0.0 // 5.5
+    const val AUTO_HEADING_P = 5.5 // 5.5
     const val AUTO_HEADING_I = 0.0
-    const val AUTO_HEADING_D = 0.0 // 0.4
+    const val AUTO_HEADING_D = 0.4 // 0.4
 
     // TODO: Tune
     const val VISION_TRANSLATION_P = 0.0 // 6.0
@@ -69,9 +69,9 @@ object SwerveConstants {
 }
 
 object DriveConfig {
-    const val DRIVE_SPEED = 1.0
+    const val DRIVE_SPEED = 4.5
 
-    const val ROT_SPEED = 2.0
+    const val ROT_SPEED = 4.0
 
     const val DRIVE_ACCELERATION = 0.0
 }

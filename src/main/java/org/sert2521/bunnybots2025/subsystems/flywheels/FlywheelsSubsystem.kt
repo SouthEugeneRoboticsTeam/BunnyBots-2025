@@ -49,6 +49,11 @@ object FlywheelsSubsystem : SubsystemBase() {
     private var bottomLastSetpoint = RPM.zero()
 
     init {
+        motorConfigTop.withGearing(1.0)
+
+
+
+
         defaultCommand = holdCommand(::topLastSetpoint, ::bottomLastSetpoint)
 
         topSMC.setupTelemetry(

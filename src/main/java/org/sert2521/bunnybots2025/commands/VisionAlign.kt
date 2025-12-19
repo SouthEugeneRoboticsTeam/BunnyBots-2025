@@ -28,7 +28,7 @@ class VisionAlign(private val target: Pose2d) : Command() {
     }
 
     override fun execute() {
-        poseError = Drivetrain.getVisionPoseToTarget(target)
+        poseError = Pose2d.kZero
 
         val translationOutput = translationPID.calculate(poseError.translation.norm)
         val rotationOutput = rotationPID.calculate(poseError.rotation.radians)
